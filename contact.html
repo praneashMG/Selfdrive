@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+
+<head>
+    <link rel="icon" type="image/png" href="assets/fav.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SelfDrive | Car Rental</title>
+    <!-- Tailwind + FontAwesome -->
+    <script src="tailwind.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        /* ========== THEME VARIABLES (performance/vintage-modern) ========== */
+        :root,
+        html[data-theme='light'] {
+            --bg-body: #F7F9FC;
+            --text-primary: #0A1C2F;
+            --text-secondary: #2C3E50;
+            --accent: #0EA5E9;
+            --accent-dark: #0284C7;
+            --primary: #1E4A6B;
+            --card-bg: #FFFFFF;
+            --border-light: #E2E8F0;
+            --hover-bg: #FEF2F2;
+            --footer-bg: #0F172A;
+            --footer-text: #E2E8F0;
+            --rating-star: #F59E0B;
+        }
+
+        html[data-theme='dark'] { color-scheme: dark;
+            --bg-body: #0B1120;
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
+            --accent: #38BDF8;
+            --accent-dark: #0EA5E9;
+            --primary: #2563EB;
+            --card-bg: #1E293B;
+            --border-light: #334155;
+            --hover-bg: #2D3A4F;
+            --footer-bg: #020617;
+            --footer-text: #CBD5E1;
+            --rating-star: #FBBF24;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            transition: background-color 0.25s ease, color 0.2s;
+            overflow-x: hidden;
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+
+        .bg-accent {
+            background-color: var(--accent);
+        }
+
+        .border-accent {
+            border-color: var(--accent);
+        }
+
+        .hover\:bg-accent\/10:hover {
+            background-color: color-mix(in srgb, var(--accent) 10%, transparent);
+        }
+
+        .bg-card {
+            background-color: var(--card-bg);
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .border-border {
+            border-color: var(--border-light);
+        }
+
+        /* Navbar + glassmorphic */
+        #main-header nav {
+            background: var(--card-bg);
+            backdrop-filter: blur(0px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        html[data-theme='dark'] #main-header nav {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: 0.2s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown style */
+        .dropdown-wrapper {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 0.75rem;
+            min-width: 190px;
+            padding: 0.4rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .dropdown-wrapper.open .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1rem;
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .dropdown-menu a:hover {
+            background: var(--hover-bg);
+            color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        /* Tire comparison cards */
+        .tire-card {
+            transition: all 0.2s;
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .tire-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-radius: 9999px;
+            transition: 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: scale(1.02);
+        }
+
+        .btn-outline {
+            border: 1.5px solid var(--accent);
+            color: var(--accent);
+            border-radius: 9999px;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .rating-star {
+            color: var(--rating-star);
+        }
+        .status-badge {
+            background: #10b981;
+            color: #ffffff;
+            border-radius: 999px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .vehicle-track {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.7s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        button:focus,
+        .dropdown-toggle:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .dropdown-toggle {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none;
+            background: transparent;
+        }
+
+        @media (max-width: 1279px) {
+            .dropdown-menu {
+                position: static;
+                display: none;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                margin-top: 0.5rem;
+            }
+
+            .dropdown-wrapper.open .dropdown-menu {
+                display: block;
+            }
+        }
+
+        /* Mobile Drawer Link Hover & Active Underlines */
+        #mobile-drawer nav a:not(.rounded-full) {
+            position: relative;
+            transition: color 0.2s ease;
+            width: fit-content;
+        }
+
+        #mobile-drawer nav a.active:not(.rounded-full) {
+            color: var(--accent) !important;
+        }
+
+        #mobile-drawer nav a:not(.rounded-full)::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.2s ease;
+        }
+
+        #mobile-drawer nav a:not(.rounded-full):hover::after {
+            width: 100%;
+        }
+
+        /* RTL support for navigation spacing, underlines and menus */
+        html[dir="rtl"] #main-header .space-x-8 > :not([hidden]) ~ :not([hidden]) {
+            margin-right: 2rem !important;
+            margin-left: 0 !important;
+        }
+        html[dir="rtl"] .dropdown-menu {
+            left: auto;
+            right: 0;
+        }
+        html[dir="rtl"] .dropdown-menu a:hover {
+            transform: translateX(-4px);
+        }
+        html[dir="rtl"] .hover\:translate-x-1:hover {
+            transform: translateX(-0.25rem) !important;
+        }
+        html[dir="rtl"] .nav-link::after {
+            left: auto;
+            right: 0;
+        }
+        html[dir="rtl"] #mobile-drawer nav a:not(.rounded-full)::after {
+            left: auto;
+            right: 0;
+        }
+    </style>
+    <style id="typography-alignment">
+        /* Typography Alignment & Consistency Overrides */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 500 !important;
+        }
+        /* Keep paragraph weights 400-500 */
+        p:not(.font-medium), div.text-secondary {
+            font-weight: 400 !important;
+        }
+        /* Ensure proper text alignment inside cards */
+        .tire-card, .bg-card, .card {
+            text-align: left !important;
+        }
+        .text-center .tire-card, .text-center .bg-card {
+            text-align: left !important;
+        }
+        /* Reduce overly wide paragraphs inside containers for readability */
+        .container p, section > div > p.text-secondary {
+            max-width: 65ch;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tire-card p, .bg-card p, .card p, .text-left p {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            max-width: none !important;
+        }
+    </style>
+    <style id="cta-improvements">
+        /* Primary CTA Highlights */
+        .btn-primary {
+            box-shadow: 0 4px 12px 0 rgba(14, 165, 233, 0.4);
+            color: #ffffff !important;
+        }
+        html[data-theme='dark'] .btn-primary {
+            box-shadow: 0 4px 12px 0 rgba(56, 189, 248, 0.3);
+            color: #0f172a !important; /* High contrast in dark mode */
+            font-weight: 600 !important;
+        }
+        
+        /* Hover Color Consistency & Contrast */
+        .btn-primary:hover {
+            background-color: var(--accent-dark) !important;
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 6px 16px 0 rgba(14, 165, 233, 0.5);
+        }
+        html[data-theme='dark'] .btn-primary:hover {
+            box-shadow: 0 6px 16px 0 rgba(56, 189, 248, 0.4);
+        }
+        
+        .btn-outline {
+            color: var(--accent) !important;
+            border-color: var(--accent) !important;
+        }
+        .btn-outline:hover {
+            background-color: var(--accent) !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+        html[data-theme='dark'] .btn-outline:hover {
+            color: #0f172a !important; /* High contrast in dark mode */
+        }
+
+        /* Align CTA buttons consistently inside cards/grids */
+        .tire-card, .dashboard-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            gap: 1.25rem;
+        }
+        .tire-card > div:last-child, .dashboard-card > div:last-child, .dashboard-card > button:last-child {
+            margin-top: auto;
+        }
+    </style>
+    <style id="image-improvements">
+        /* Prevent image distortion globally */
+        img:not([src*="fav.png"]):not(.object-contain) {
+            object-fit: cover !important;
+        }
+        
+        /* Ensure proper background overlays for readability (apply to containers if needed) */
+        .bg-overlay {
+            position: relative;
+        }
+        .bg-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.95) 100%);
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .bg-overlay > *:not(img) {
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+    <style id="responsive-fixes">
+        /* Guarantee text wrapping on small screens */
+        body {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            -ms-word-break: break-all;
+            word-break: break-word;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 w-full z-50 pt-3" id="main-header">
+        <nav
+            class="max-w-7xl mx-auto px-5 py-3 rounded-2xl flex items-center justify-between backdrop-blur-sm border border-border">
+            <a href="index.html" class="text-2xl font-bold tracking-tight text-accent" style="font-weight: 700 !important;"><i class="fas fa-car mr-2"></i>SelfDrive</a>
+            <!-- Desktop Center Nav -->
+            <div class="hidden xl:flex items-center space-x-8 rtl:space-x-reverse text-sm font-medium">
+                <div class="dropdown-wrapper">
+                    <button class="nav-link active dropdown-toggle flex items-center gap-1.5 whitespace-nowrap"><span>Home</span><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 11.5l-7 7-7-7"></path></svg></button>
+                    <div class="dropdown-menu">
+                        <a href="index.html" class="text-accent font-medium">Home 1</a>
+                        <a href="home2.html">Home 2</a>
+                    </div>
+                </div>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="fleet.html" class="nav-link">Fleet</a>
+                <a href="locations.html" class="nav-link">Locations</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="dropdown-wrapper">
+                    <button class="nav-link dropdown-toggle flex items-center gap-1.5 whitespace-nowrap"><span>Dashboard</span><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 11.5l-7 7-7-7"></path></svg></button>
+                    <div class="dropdown-menu">
+                        <a href="admin.html">Admin Dashboard</a>
+                        <a href="user.html">Customer Dashboard</a>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden xl:flex items-center gap-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-accent/10"><i
+                        class="fas fa-moon light-icon"></i><i class="fas fa-sun dark-icon hidden"></i></button>
+                <button id="lang-icon" class="p-2 rounded-full hover:bg-accent/10"><i class="fas fa-exchange-alt"></i></button>
+                <a href="login.html" class="btn-primary px-6 py-2 text-sm font-medium shadow-md"><i class="fas fa-user-circle mr-1"></i> Sign In</a>
+            </div>
+            <div class="xl:hidden flex items-center gap-3">
+                <button id="mobile-menu-open"><i class="fas fa-bars text-2xl"></i></button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer" class="fixed inset-0 z-50 pointer-events-none transition-all duration-300">
+        <div id="drawer-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition pointer-events-none"></div>
+        <div id="drawer-panel"
+            class="absolute top-0 left-0 w-80 h-full bg-card shadow-2xl transform -translate-x-full transition-transform duration-300 p-6 overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-border pb-4"><a href="index.html" class="text-2xl font-bold tracking-tight text-accent" style="font-weight: 700 !important;; color: var(--accent) !important;"><i class="fas fa-car mr-2"></i>SelfDrive</a><button id="drawer-close"><i
+                        class="fas fa-times text-xl"></i></button></div>
+            <nav class="flex flex-col gap-3 mt-6">
+                <div><button id="mobile-home-toggle" class="flex w-full justify-between items-center py-2 font-medium text-accent">Home <i class="fas fa-chevron-down text-xs"></i></button>
+                    <div id="mobile-home-submenu" class="pl-4 flex flex-col gap-2 mt-1 border-l border-border">
+                        <a href="index.html" class="text-accent font-medium">Home 1</a><a href="home2.html">Home 2</a>
+                    </div>
+                </div>
+                <a href="about.html" class="py-2 font-medium">About Us</a>
+                <a href="fleet.html" class="py-2 font-medium">Fleet</a>
+                <a href="locations.html" class="py-2 font-medium">Locations</a>
+                <a href="pricing.html" class="py-2 font-medium">Pricing</a>
+                <a href="contact.html" class="py-2 font-medium">Contact</a>
+                <div><button id="mobile-dashboard-toggle" class="flex w-full justify-between items-center py-2 font-medium">Dashboard <i class="fas fa-chevron-down text-xs"></i></button>
+                    <div id="mobile-dashboard-submenu" class="hidden pl-4 flex flex-col gap-2 mt-1 border-l border-border">
+                        <a href="admin.html">Admin Dashboard</a><a href="user.html">Customer Dashboard</a>
+                    </div>
+                </div>
+                
+                <div class="pt-4 border-t border-border mt-4">
+                    <a href="login.html" class="block w-full text-center bg-accent rounded-full py-2 text-white font-medium shadow-md"><i class="fas fa-user-circle mr-1"></i> Sign In</a>
+                </div>
+                <div class="flex justify-around mt-6 pt-2"><button id="mobile-theme-btn" class="p-2"><i
+                            class="fas fa-moon"></i> Theme</button><button id="mobile-rtl-btn" class="p-2"><i
+                            class="fas fa-exchange-alt"></i> RTL</button></div>
+            </nav>
+        </div>
+    </div>
+<main>
+      <!-- ========== SECTION 1: PAGE HERO ========== -->
+<section class="relative min-h-[75vh] flex items-center justify-center overflow-hidden reveal">
+    <!-- Background Image with Overlay -->
+    <div class="absolute inset-0 bg-overlay">
+        <img src="assets/images/img_23.jpg"
+             alt="Customer support desk" class="w-full h-full object-cover">
+    </div>
+
+    <!-- Hero Content -->
+    <div class="relative z-10 max-w-4xl mx-auto px-5 text-center text-white pt-40 pb-20">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 border border-white/30 bg-white/10 backdrop-blur-sm">
+            <i class="fas fa-headset mr-1.5"></i> Contact Us
+        </span>
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6" style="font-weight: 700 !important;">
+            We're Here to Help
+        </h1>
+        <p class="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+            Questions, feedback, or need assistance? Reach out anytime — our team is available 24/7.
+        </p>
+
+        <!-- Breadcrumb -->
+        <div class="flex items-center justify-center gap-2 mt-8 text-sm text-white/60">
+            <a href="index.html" class="hover:text-accent transition-colors">Home</a>
+            <i class="fas fa-chevron-right text-[10px]"></i>
+            <span class="text-white">Contact</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ========== SECTION 2: CONTACT CARDS ========== -->
+<section class="py-20 md:py-28" style="background: var(--bg-body);">
+    <div class="max-w-7xl mx-auto px-5">
+        <!-- Centered Heading -->
+        <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Get in Touch</span>
+            <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                How to Reach Us
+            </h2>
+            <p class="text-secondary text-base md:text-lg leading-relaxed">
+                Choose the channel that works best for you. We respond fast — usually within minutes.
+            </p>
+        </div>
+
+        <!-- Contact Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- Card 1: Phone -->
+            <div class="bg-card rounded-2xl p-7 border border-border flex flex-col items-center text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 reveal">
+                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
+                    <i class="fas fa-phone-alt fa-flip-horizontal text-2xl text-accent"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="font-weight: 600 !important;">Call Us</h3>
+                <p class="text-secondary text-xs mb-4">Available 24/7 for urgent matters</p>
+                <p class="text-sm font-bold text-accent" style="font-weight: 700 !important;">(800) 555-AUTO</p>
+                <p class="text-xs text-secondary mt-1">+1 (212) 555-0142</p>
+            </div>
+
+            <!-- Card 2: Email -->
+            <div class="bg-card rounded-2xl p-7 border border-border flex flex-col items-center text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 reveal">
+                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
+                    <i class="fas fa-envelope text-2xl text-accent"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="font-weight: 600 !important;">Email Us</h3>
+                <p class="text-secondary text-xs mb-4">Replies within 2 hours</p>
+                <p class="text-sm font-bold text-accent" style="font-weight: 700 !important;">hello@selfdrive.com</p>
+                <p class="text-xs text-secondary mt-1">support@selfdrive.com</p>
+            </div>
+
+            <!-- Card 3: Live Chat -->
+            <div class="bg-card rounded-2xl p-7 border border-border flex flex-col items-center text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 reveal">
+                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
+                    <i class="fas fa-comments text-2xl text-accent"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="font-weight: 600 !important;">Live Chat</h3>
+                <p class="text-secondary text-xs mb-4">Instant answers, 24/7</p>
+                <p class="text-sm font-bold text-accent" style="font-weight: 700 !important;">Start a Chat</p>
+                <p class="text-xs text-secondary mt-1">Average wait: 30 seconds</p>
+            </div>
+
+            <!-- Card 4: Visit -->
+            <div class="bg-card rounded-2xl p-7 border border-border flex flex-col items-center text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 reveal">
+                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
+                    <i class="fas fa-map-marker-alt text-2xl text-accent"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="font-weight: 600 !important;">Visit Us</h3>
+                <p class="text-secondary text-xs mb-4">Head office & customer center</p>
+                <p class="text-sm font-bold text-accent" style="font-weight: 700 !important;">New York, NY</p>
+                <p class="text-xs text-secondary mt-1">350 5th Avenue, Suite 100</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ========== SECTION 3: CONTACT FORM ========== -->
+<section class="py-20 md:py-28 border-y border-border" style="background: var(--card-bg);">
+    <div class="max-w-7xl mx-auto px-5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+            <!-- Left: Image -->
+            <div class="reveal relative">
+                <div class="rounded-3xl overflow-hidden border border-border shadow-2xl">
+                    <img src="assets/images/img_24.jpg"
+                         alt="Customer support agent" class="w-full h-[420px] md:h-[560px] object-cover">
+                </div>
+                <!-- Floating info card -->
+                <div class="absolute bottom-6 left-6 right-6 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl p-5 border border-border shadow-xl">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-accent flex items-center justify-center shrink-0">
+                            <i class="fas fa-clock text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold" style="font-weight: 600 !important;">Average Response Time</p>
+                            <p class="text-xs text-secondary">Under 2 hours — 7 days a week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Form -->
+            <div class="reveal">
+                <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Send a Message</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-3 mb-4" style="font-weight: 700 !important;">
+                    Let's Talk About Your Trip
+                </h2>
+                <p class="text-secondary text-base leading-relaxed mb-8">
+                    Fill out the form below and one of our team members will get back to you shortly.
+                </p>
+
+                <form class="space-y-5" onsubmit="event.preventDefault(); alert('Message sent successfully! We will respond within 2 hours.');">
+                    <!-- Name + Email row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold mb-2 text-secondary uppercase tracking-wider">Full Name</label>
+                            <input type="text" required placeholder="John Doe"
+                                   class="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                                   style="color: var(--text-primary);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-2 text-secondary uppercase tracking-wider">Email Address</label>
+                            <input type="email" required placeholder="john@example.com"
+                                   class="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                                   style="color: var(--text-primary);">
+                        </div>
+                    </div>
+
+                    <!-- Subject -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-2 text-secondary uppercase tracking-wider">Subject</label>
+                        <select class="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                                style="color: var(--text-primary);">
+                            <option>General Inquiry</option>
+                            <option>Booking Assistance</option>
+                            <option>Billing Question</option>
+                            <option>Report an Issue</option>
+                            <option>Corporate / Partnership</option>
+                            <option>Feedback</option>
+                        </select>
+                    </div>
+
+                    <!-- Message -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-2 text-secondary uppercase tracking-wider">Message</label>
+                        <textarea rows="5" required placeholder="Tell us how we can help you..."
+                                  class="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors resize-none"
+                                  style="color: var(--text-primary);"></textarea>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-primary w-full py-3.5 text-sm font-semibold inline-flex items-center justify-center gap-2">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+
+                    <p class="text-[11px] text-secondary text-center">
+                        By submitting, you agree to our <a href="#" class="text-accent hover:underline">Privacy Policy</a> and <a href="#" class="text-accent hover:underline">Terms of Service</a>.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ========== SECTION 4: FAQ ========== -->
+<section class="py-20 md:py-28" style="background: var(--bg-body);">
+    <div class="max-w-5xl mx-auto px-5">
+        <!-- Centered Heading -->
+        <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Quick Answers</span>
+            <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                Frequently Asked Questions
+            </h2>
+            <p class="text-secondary text-base md:text-lg leading-relaxed">
+                Find quick answers to the most common questions about our service, bookings, and policies.
+            </p>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <div class="space-y-4 reveal">
+
+            <!-- FAQ 1 -->
+            <details class="bg-card rounded-2xl border border-border overflow-hidden group">
+                <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+                    <span class="text-base font-semibold pr-4" style="font-weight: 600 !important;">What do I need to rent a car?</span>
+                    <i class="fas fa-chevron-down text-accent transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="px-6 pb-6 text-secondary text-sm leading-relaxed border-t border-border pt-4">
+                    You'll need a valid driver's license, a major credit card in your name, and to be at least 21 years old (25 for luxury vehicles). International customers may also need an International Driving Permit.
+                </div>
+            </details>
+
+            <!-- FAQ 2 -->
+            <details class="bg-card rounded-2xl border border-border overflow-hidden group">
+                <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+                    <span class="text-base font-semibold pr-4" style="font-weight: 600 !important;">Is insurance included in the rental price?</span>
+                    <i class="fas fa-chevron-down text-accent transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="px-6 pb-6 text-secondary text-sm leading-relaxed border-t border-border pt-4">
+                    Yes. Every rental comes with comprehensive insurance coverage including collision damage waiver, theft protection, and third-party liability. There are no hidden insurance fees.
+                </div>
+            </details>
+
+            <!-- FAQ 3 -->
+            <details class="bg-card rounded-2xl border border-border overflow-hidden group">
+                <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+                    <span class="text-base font-semibold pr-4" style="font-weight: 600 !important;">Can I cancel or modify my booking?</span>
+                    <i class="fas fa-chevron-down text-accent transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="px-6 pb-6 text-secondary text-sm leading-relaxed border-t border-border pt-4">
+                    Absolutely. You can cancel or modify your booking free of charge up to 24 hours before your scheduled pickup time. Just log into your account or contact our support team.
+                </div>
+            </details>
+
+            <!-- FAQ 4 -->
+            <details class="bg-card rounded-2xl border border-border overflow-hidden group">
+                <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+                    <span class="text-base font-semibold pr-4" style="font-weight: 600 !important;">What happens if the car breaks down?</span>
+                    <i class="fas fa-chevron-down text-accent transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="px-6 pb-6 text-secondary text-sm leading-relaxed border-t border-border pt-4">
+                    Every rental includes 24/7 roadside assistance. If your car becomes undrivable, we'll send help immediately and provide a replacement vehicle if needed — at no extra cost.
+                </div>
+            </details>
+
+            <!-- FAQ 5 -->
+            <details class="bg-card rounded-2xl border border-border overflow-hidden group">
+                <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+                    <span class="text-base font-semibold pr-4" style="font-weight: 600 !important;">Can I add an additional driver?</span>
+                    <i class="fas fa-chevron-down text-accent transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="px-6 pb-6 text-secondary text-sm leading-relaxed border-t border-border pt-4">
+                    Yes, additional drivers can be added for $12 per day. The additional driver must meet the same age and license requirements and be present at pickup to sign the rental agreement.
+                </div>
+            </details>
+
+            <!-- FAQ 6 -->
+            <details class="bg-card rounded-2xl border border-border overflow-hidden group">
+                <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+                    <span class="text-base font-semibold pr-4" style="font-weight: 600 !important;">Do you offer one-way rentals?</span>
+                    <i class="fas fa-chevron-down text-accent transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="px-6 pb-6 text-secondary text-sm leading-relaxed border-t border-border pt-4">
+                    Yes, one-way rentals are available between most of our locations. A small drop-off fee may apply depending on the distance between pickup and drop-off points. Contact us for details.
+                </div>
+            </details>
+        </div>
+
+        <!-- More questions -->
+        <div class="text-center mt-12 reveal">
+            <p class="text-secondary text-sm mb-4">Still have questions?</p>
+            <a href="#" class="btn-outline px-8 py-3 text-sm font-semibold inline-flex items-center gap-2">
+                <i class="fas fa-comments"></i> Chat with Support
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ========== SECTION 5: OFFICE LOCATIONS ========== -->
+<section class="py-20 md:py-28 border-y border-border" style="background: var(--card-bg);">
+    <div class="max-w-7xl mx-auto px-5">
+        <!-- Centered Heading -->
+        <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Visit Us</span>
+            <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                Our Offices
+            </h2>
+            <p class="text-secondary text-base md:text-lg leading-relaxed">
+                Stop by one of our offices for in-person assistance, or to pick up your rental car.
+            </p>
+        </div>
+
+        <!-- Office Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- Office 1 -->
+            <div class="bg-card rounded-3xl border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 reveal">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="assets/images/img_25.jpg"
+                         alt="New York Office" class="w-full h-full object-cover">
+                    <span class="absolute top-4 left-4 bg-accent text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase">Head Office</span>
+                </div>
+                <div class="p-7">
+                    <h3 class="text-xl font-semibold mb-3" style="font-weight: 600 !important;">New York</h3>
+                    <div class="space-y-3 text-sm text-secondary">
+                        <p class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-accent mt-0.5"></i>
+                            <span>350 5th Avenue, Suite 100<br>New York, NY 10118</span>
+                        </p>
+                        <p class="flex items-center gap-3">
+                            <i class="fas fa-phone text-accent"></i>
+                            <span>(212) 555-0142</span>
+                        </p>
+                        <p class="flex items-center gap-3">
+                            <i class="fas fa-clock text-accent"></i>
+                            <span>Mon–Sun: 6AM–11PM</span>
+                        </p>
+                    </div>
+                    <a href="#" class="btn-outline block w-full text-center py-2.5 text-xs font-semibold mt-6">
+                        <i class="fas fa-directions mr-1"></i> Get Directions
+                    </a>
+                </div>
+            </div>
+
+            <!-- Office 2 -->
+            <div class="bg-card rounded-3xl border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 reveal">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="assets/images/img_26.jpg"
+                         alt="London Office" class="w-full h-full object-cover">
+                    <span class="absolute top-4 left-4 bg-accent text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase">Europe HQ</span>
+                </div>
+                <div class="p-7">
+                    <h3 class="text-xl font-semibold mb-3" style="font-weight: 600 !important;">London</h3>
+                    <div class="space-y-3 text-sm text-secondary">
+                        <p class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-accent mt-0.5"></i>
+                            <span>221 Baker Street<br>London, NW1 6XE, UK</span>
+                        </p>
+                        <p class="flex items-center gap-3">
+                            <i class="fas fa-phone text-accent"></i>
+                            <span>+44 20 5550 1345</span>
+                        </p>
+                        <p class="flex items-center gap-3">
+                            <i class="fas fa-clock text-accent"></i>
+                            <span>Mon–Sun: 7AM–10PM</span>
+                        </p>
+                    </div>
+                    <a href="#" class="btn-outline block w-full text-center py-2.5 text-xs font-semibold mt-6">
+                        <i class="fas fa-directions mr-1"></i> Get Directions
+                    </a>
+                </div>
+            </div>
+
+            <!-- Office 3 -->
+            <div class="bg-card rounded-3xl border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 reveal">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="assets/images/img_27.jpg"
+                         alt="Paris Office" class="w-full h-full object-cover">
+                    <span class="absolute top-4 left-4 bg-accent text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase">EU Office</span>
+                </div>
+                <div class="p-7">
+                    <h3 class="text-xl font-semibold mb-3" style="font-weight: 600 !important;">Paris</h3>
+                    <div class="space-y-3 text-sm text-secondary">
+                        <p class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-accent mt-0.5"></i>
+                            <span>15 Rue de Rivoli<br>75001 Paris, France</span>
+                        </p>
+                        <p class="flex items-center gap-3">
+                            <i class="fas fa-phone text-accent"></i>
+                            <span>+33 1 5550 1345</span>
+                        </p>
+                        <p class="flex items-center gap-3">
+                            <i class="fas fa-clock text-accent"></i>
+                            <span>Mon–Sun: 8AM–9PM</span>
+                        </p>
+                    </div>
+                    <a href="#" class="btn-outline block w-full text-center py-2.5 text-xs font-semibold mt-6">
+                        <i class="fas fa-directions mr-1"></i> Get Directions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- ========== MAP SECTION ========== -->
+<section class="py-16 bg-white dark:bg-slate-900 reveal">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Find Us</span>
+            <h2 class="text-3xl md:text-4xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">Our Headquarters</h2>
+            <p class="text-secondary text-base md:text-lg leading-relaxed">
+                Visit our main office located in the heart of New York City.
+            </p>
+        </div>
+        <div class="w-full h-[500px] rounded-3xl overflow-hidden border border-border shadow-2xl relative">
+            <iframe 
+                src="https://maps.google.com/maps?q=350%205th%20Avenue,%20New%20York,%20NY&t=&z=13&ie=UTF8&iwloc=&output=embed" 
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                class="absolute inset-0 w-full h-full grayscale hover:grayscale-0 transition-all duration-700">
+            </iframe>
+        </div>
+    </div>
+</section>
+
+<!-- ========== SECTION 6: FINAL CTA ========== -->
+<section class="py-20 md:py-28 relative overflow-hidden reveal" style="background: var(--bg-body);">
+    <!-- Background Image with Overlay -->
+    <div class="absolute inset-0 bg-overlay">
+        <img src="assets/images/img_28.jpg"
+             alt="Open road" class="w-full h-full object-cover">
+    </div>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-5 text-center text-white">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 border border-white/30 bg-white/10 backdrop-blur-sm">
+            <i class="fas fa-phone-volume mr-1.5"></i> 24/7 Support
+        </span>
+        <h2 class="text-3xl md:text-5xl font-bold mb-6" style="font-weight: 700 !important;">
+            Need Help Right Now?
+        </h2>
+        <p class="text-lg text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Our support team is available around the clock. Whether you're on the road or planning ahead, we're just a call or click away.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="tel:8005552886" class="btn-primary px-8 py-3.5 text-base font-semibold shadow-lg inline-flex items-center justify-center gap-2">
+                <i class="fas fa-phone"></i> Call (800) 555-AUTO
+            </a>
+            <a href="mailto:hello@selfdrive.com" class="btn-outline px-8 py-3.5 text-base font-semibold inline-flex items-center justify-center gap-2" style="border-color: rgba(255,255,255,0.6); color: #ffffff;">
+                <i class="fas fa-envelope"></i> Email Support
+            </a>
+        </div>
+
+        <!-- Quick badges -->
+        <div class="flex flex-wrap justify-center gap-6 mt-12 text-xs text-white/70">
+            <span class="flex items-center gap-2"><i class="fas fa-check-circle text-accent"></i> Average response: 2 hours</span>
+            <span class="flex items-center gap-2"><i class="fas fa-check-circle text-accent"></i> Support in 5 languages</span>
+            <span class="flex items-center gap-2"><i class="fas fa-check-circle text-accent"></i> 98% satisfaction rate</span>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="pt-16 pb-8 border-t border-slate-800"
+        style="background: var(--footer-bg); color: var(--footer-text);">
+        <div class="max-w-7xl mx-auto px-5 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+            <div class="col-span-2 md:col-span-2 lg:col-span-1">
+                <a href="index.html" class="text-2xl font-bold tracking-tight text-accent" style="font-weight: 700 !important;"><i class="fas fa-car mr-2"></i>SelfDrive</a>
+                <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+                    Premium self-drive car rental service. Choose from a wide variety of well-maintained cars for your next trip.
+                </p>
+                <div class="mt-4 space-y-2 text-xs text-slate-300">
+                    <p class="flex items-center gap-2"><i class="fas fa-phone text-accent"></i> (800) 555-AUTO</p>
+                    <p class="flex items-center gap-2"><i class="far fa-clock text-accent"></i> 24 Hours / 7 Days</p>
+                </div>
+                <div class="flex gap-2.5 mt-5">
+                    <a href="#"
+                        class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-accent flex items-center justify-center transition-all duration-300 text-white"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-accent flex items-center justify-center transition-all duration-300 text-white"><i
+                            class="fab fa-facebook-f text-sm"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-accent flex items-center justify-center transition-all duration-300 text-white"><i
+                            class="fab fa-x-twitter"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-accent flex items-center justify-center transition-all duration-300 text-white"><i
+                            class="fab fa-linkedin-in text-sm"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-medium text-sm tracking-wider uppercase text-white mb-4">Fleet & Pricing</h4>
+                <ul class="text-xs space-y-2.5 text-slate-400">
+                    <li><a href="fleet.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Our Cars</a></li>
+                    <li><a href="pricing.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Daily Rentals</a></li>
+                    <li><a href="pricing.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Weekly Plans</a></li>
+                    <li><a href="pricing.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Monthly Subscriptions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-medium text-sm tracking-wider uppercase text-white mb-4">Support</h4>
+                <ul class="text-xs space-y-2.5 text-slate-400">
+                    <li><a href="contact.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Help Center</a></li>
+                    <li><a href="contact.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Booking Guide</a></li>
+                    <li><a href="contact.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Cancellation Policy</a></li>
+                    <li><a href="contact.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">FAQ</a></li>
+                    <li><a href="contact.html" class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-medium text-sm tracking-wider uppercase text-white mb-4">Company</h4>
+                <ul class="text-xs space-y-2.5 text-slate-400">
+                    <li><a href="#tracking"
+                            class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Coverage
+                            Map</a></li>
+                    <li><a href="index.html"
+                            class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">About
+                            SelfDrive</a></li>
+                    <li><a href="signup.html"
+                            class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Careers</a>
+                    </li>
+                    <li><a href="login.html"
+                            class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Affiliate
+                            Portal</a></li>
+                    <li><a href="contact.html"
+                            class="hover:text-accent hover:translate-x-1 inline-block transition-all duration-200">Press
+                            Kit</a></li>
+                </ul>
+            </div>
+            <div class="col-span-2 md:col-span-3 lg:col-span-1">
+                <h4 class="font-medium text-sm tracking-wider uppercase text-white mb-4">Stay Connected</h4>
+                <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+                    Subscribe for special rental offers, travel tips, and new fleet announcements.
+                </p>
+                <form class="flex gap-2 max-w-xs" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
+                    <input type="email" placeholder="Your email address" required
+                        class="bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-2 w-full focus:outline-none focus:border-accent transition-colors">
+                    <button type="submit"
+                        class="bg-accent text-white px-3 py-2 rounded-lg text-xs font-medium hover:opacity-90 transition-opacity"><i
+                            class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div
+            class="max-w-7xl mx-auto px-5 mt-12 pt-6 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400">
+            <p>© 2026 SelfDrive. Drive with Confidence. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a href="contact.html" class="hover:text-accent transition-colors">Privacy Policy</a>
+                <a href="contact.html" class="hover:text-accent transition-colors">Terms of Service</a>
+                <a href="contact.html" class="hover:text-accent transition-colors">Cookie Settings</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const html = document.documentElement;
+            // Theme toggles
+            const themeBtn = document.getElementById('theme-toggle'), mobileTheme = document.getElementById('mobile-theme-btn');
+            const applyTheme = (theme) => { html.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); document.querySelectorAll('.light-icon').forEach(icon => icon.classList.toggle('hidden', theme === 'dark')); document.querySelectorAll('.dark-icon').forEach(icon => icon.classList.toggle('hidden', theme === 'light')); };
+            const initTheme = () => { const stored = localStorage.getItem('theme'); const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches; applyTheme(stored === 'dark' || (!stored && prefers) ? 'dark' : 'light'); };
+            const toggleTheme = () => { const cur = html.getAttribute('data-theme'); applyTheme(cur === 'light' ? 'dark' : 'light'); };
+            themeBtn?.addEventListener('click', toggleTheme); if (mobileTheme) mobileTheme.addEventListener('click', toggleTheme);
+            initTheme();
+            // RTL
+            const langBtn = document.getElementById('lang-icon'), mobileRtl = document.getElementById('mobile-rtl-btn');
+            const toggleRtl = () => { const isRtl = html.getAttribute('dir') === 'rtl'; html.setAttribute('dir', isRtl ? 'ltr' : 'rtl'); localStorage.setItem('dir', isRtl ? 'ltr' : 'rtl'); };
+            if (langBtn) langBtn.addEventListener('click', toggleRtl);
+            if (mobileRtl) mobileRtl.addEventListener('click', toggleRtl);
+            const savedDir = localStorage.getItem('dir') === 'rtl' ? 'rtl' : 'ltr'; html.setAttribute('dir', savedDir);
+            // dropdowns desktop
+            document.querySelectorAll('.dropdown-wrapper').forEach(drop => {
+                const btn = drop.querySelector('.dropdown-toggle');
+                if (window.innerWidth >= 1280) {
+                    drop.addEventListener('mouseenter', () => drop.classList.add('open'));
+                    drop.addEventListener('mouseleave', () => drop.classList.remove('open'));
+                } else {
+                    btn?.addEventListener('click', (e) => { e.preventDefault(); drop.classList.toggle('open'); });
+                }
+            });
+            document.addEventListener('click', (e) => { if (!e.target.closest('.dropdown-wrapper')) document.querySelectorAll('.dropdown-wrapper').forEach(d => d.classList.remove('open')); });
+            // Mobile drawer
+            const drawer = document.getElementById('mobile-drawer'), backdrop = document.getElementById('drawer-backdrop'), panel = document.getElementById('drawer-panel'), openBtn = document.getElementById('mobile-menu-open'), closeBtn = document.getElementById('drawer-close');
+            const openDrawer = () => { drawer.classList.remove('pointer-events-none'); panel.classList.remove('-translate-x-full'); backdrop.classList.add('opacity-100', 'pointer-events-auto'); document.body.style.overflow = 'hidden'; };
+            const closeDrawer = () => { panel.classList.add('-translate-x-full'); backdrop.classList.remove('opacity-100', 'pointer-events-auto'); setTimeout(() => drawer.classList.add('pointer-events-none'), 300); document.body.style.overflow = ''; };
+            openBtn?.addEventListener('click', openDrawer); closeBtn?.addEventListener('click', closeDrawer); backdrop?.addEventListener('click', closeDrawer);
+            document.getElementById('mobile-home-toggle')?.addEventListener('click', () => { document.getElementById('mobile-home-submenu')?.classList.toggle('hidden'); });
+            document.getElementById('mobile-dashboard-toggle')?.addEventListener('click', () => { document.getElementById('mobile-dashboard-submenu')?.classList.toggle('hidden'); });
+            // reveal animation
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); }); }, { threshold: 0.15 });
+            reveals.forEach(r => observer.observe(r));
+            // Add active nav based on hash
+            const navLinks = document.querySelectorAll('.nav-link, .dropdown-menu a, #mobile-drawer a');
+            navLinks.forEach(link => { link.addEventListener('click', function (e) { if (this.getAttribute('href')?.startsWith('#')) e.preventDefault(); window.location.hash = this.getAttribute('href')?.slice(1) || ''; }); });
+
+            // Dynamic Active Page Highlighter (Desktop & Mobile)
+            const currentPath = window.location.pathname;
+            let currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1);
+            if (!currentPage || currentPage === '/') currentPage = 'index.html';
+
+            // 1. Clean slate: clear all hardcoded active classes
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.querySelectorAll('.dropdown-toggle').forEach(link => link.classList.remove('active'));
+            document.querySelectorAll('.dropdown-menu a').forEach(link => link.classList.remove('text-accent', 'font-medium'));
+            
+            const mobileDrawer = document.getElementById('mobile-drawer');
+            if (mobileDrawer) {
+                mobileDrawer.querySelectorAll('a').forEach(link => {
+                    link.classList.remove('active', 'text-accent', 'font-medium');
+                });
+                mobileDrawer.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('text-accent');
+                });
+                // Reset submenus to hidden
+                const dbSub = document.getElementById('mobile-dashboard-submenu');
+                if (dbSub) dbSub.classList.add('hidden');
+                const homeSub = document.getElementById('mobile-home-submenu');
+                if (homeSub) homeSub.classList.add('hidden');
+            }
+
+            // 2. Desktop Highlighting
+            let desktopMatched = false;
+            document.querySelectorAll('.dropdown-menu a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPage) {
+                    link.classList.add('text-accent', 'font-medium');
+                    const wrapper = link.closest('.dropdown-wrapper');
+                    if (wrapper) {
+                        const toggle = wrapper.querySelector('.dropdown-toggle');
+                        if (toggle) toggle.classList.add('active');
+                    }
+                    desktopMatched = true;
+                }
+            });
+
+            if (!desktopMatched) {
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const wrapper = link.closest('.dropdown-wrapper');
+                    if (!wrapper) {
+                        const href = link.getAttribute('href');
+                        if (href === currentPage) {
+                            link.classList.add('active');
+                        }
+                    }
+                });
+            }
+
+            // 3. Mobile Highlighting
+            if (mobileDrawer) {
+                let mobileMatched = false;
+                mobileDrawer.querySelectorAll('a').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === currentPage) {
+                        link.classList.add('active');
+                        if (!link.classList.contains('rounded-full')) {
+                            link.classList.add('text-accent', 'font-medium');
+                        }
+                        
+                        // Handle parents/submenus
+                        const homeSubmenu = document.getElementById('mobile-home-submenu');
+                        const dashboardSubmenu = document.getElementById('mobile-dashboard-submenu');
+                        
+                        if (homeSubmenu && homeSubmenu.contains(link)) {
+                            const homeToggle = document.getElementById('mobile-home-toggle');
+                            if (homeToggle) homeToggle.classList.add('text-accent');
+                            homeSubmenu.classList.remove('hidden');
+                        } else if (dashboardSubmenu && dashboardSubmenu.contains(link)) {
+                            const dashboardToggle = document.getElementById('mobile-dashboard-toggle');
+                            if (dashboardToggle) dashboardToggle.classList.add('text-accent');
+                            dashboardSubmenu.classList.remove('hidden');
+                        }
+                        mobileMatched = true;
+                    }
+                });
+
+                // Fallback for index.html / home2.html / empty path
+                if (!mobileMatched && (currentPage === 'index.html' || currentPage === 'home2.html')) {
+                    const homeToggle = document.getElementById('mobile-home-toggle');
+                    if (homeToggle) homeToggle.classList.add('text-accent');
+                    const homeSubmenu = document.getElementById('mobile-home-submenu');
+                    if (homeSubmenu) homeSubmenu.classList.remove('hidden');
+                    
+                    const matchingLink = mobileDrawer.querySelector(`a[href="${currentPage}"]`);
+                    if (matchingLink) {
+                        matchingLink.classList.add('active', 'text-accent', 'font-medium');
+                    }
+                }
+            }
+        })();
+    </script>
+    <!-- home2.html redirect simulation: if path includes home2.html, just update theme but fully functional -->
+    <script>
+        // MOCK support for home2 version (just stays same design but content identical, but we respect current page path)
+        if (window.location.pathname.includes('home2.html')) { document.title = "SelfDriveSwift | Performance Pro Edition"; }
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

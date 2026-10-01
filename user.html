@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+
+<head>
+    <link rel="icon" type="image/png" href="assets/fav.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>My Dashboard | SelfDrive</title>
+    <script src="tailwind.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root, html[data-theme='light'] {
+            --bg-body: #F7F9FC;
+            --text-primary: #0A1C2F;
+            --text-secondary: #2C3E50;
+            --accent: #0EA5E9;
+            --accent-dark: #0284C7;
+            --primary: #1E4A6B;
+            --card-bg: #FFFFFF;
+            --border-light: #E2E8F0;
+            --hover-bg: #FEF2F2;
+            --rating-star: #F59E0B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+        html[data-theme='dark'] { color-scheme: dark;
+            --bg-body: #0B1120;
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
+            --accent: #38BDF8;
+            --accent-dark: #0EA5E9;
+            --primary: #2563EB;
+            --card-bg: #1E293B;
+            --border-light: #334155;
+            --hover-bg: #2D3A4F;
+            --rating-star: #FBBF24;
+            --success: #059669;
+            --warning: #D97706;
+            --danger: #DC2626;
+        }
+        body {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            transition: background-color 0.25s ease, color 0.2s;
+            overflow-x: hidden;
+        }
+        .text-accent { color: var(--accent); }
+        .bg-accent { background-color: var(--accent); }
+        .border-accent { border-color: var(--accent); }
+        .bg-card { background-color: var(--card-bg); }
+        .bg-body { background-color: var(--bg-body); }
+        .text-secondary { color: var(--text-secondary); }
+        .border-border { border-color: var(--border-light); }
+        .hover\:bg-accent\/10:hover { background-color: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+        h1, h2, h3, h4, h5, h6 { font-weight: 500 !important; }
+        p, .text-secondary { font-weight: 400 !important; }
+
+        /* Cards */
+        .dash-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 1.25rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.04);
+        }
+        .dash-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 24px -8px rgba(14, 165, 233, 0.15);
+        }
+
+        /* Sidebar */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            color: var(--text-secondary);
+            transition: all 0.18s ease;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            color: white;
+            background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+        }
+        .sidebar-link:hover i, .sidebar-link.active i { color: white !important; }
+        .sidebar-link.logout:hover { background: #d13b3b; color: white; }
+
+        html[dir="rtl"] .sidebar-link { flex-direction: row-reverse; }
+        html[dir="rtl"] .ml-auto { margin-right: auto; margin-left: 0; }
+
+        /* Badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .badge-active { background-color: var(--success); color: white; }
+        .badge-pending { background-color: var(--warning); color: white; }
+        .badge-confirmed { background-color: #3B82F6; color: white; }
+        .badge-completed { background-color: var(--success); color: white; }
+        .badge-cancelled { background-color: var(--danger); color: white; }
+
+        .status-pulse {
+            width: 10px; height: 10px;
+            background-color: var(--accent);
+            border-radius: 9999px;
+            box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.5);
+            animation: pulse2 2s infinite;
+        }
+        @keyframes pulse2 {
+            70% { box-shadow: 0 0 0 6px rgba(14, 165, 233, 0); }
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-radius: 9999px;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px 0 rgba(14, 165, 233, 0.4);
+        }
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 6px 16px 0 rgba(14, 165, 233, 0.5);
+        }
+        html[data-theme='dark'] .btn-primary { color: #0f172a !important; font-weight: 600 !important; }
+
+        .btn-outline {
+            border: 1.5px solid var(--accent);
+            color: var(--accent);
+            border-radius: 9999px;
+            background: transparent;
+            transition: 0.2s;
+        }
+        .btn-outline:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-1px);
+        }
+        html[data-theme='dark'] .btn-outline:hover { color: #0f172a !important; }
+
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 10px;
+        }
+
+        #mobile-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            position: fixed;
+            inset: 0;
+            z-index: 55;
+        }
+        #mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .dash-section { display: block; }
+
+        .toggle-switch {
+            width: 48px; height: 24px;
+            border-radius: 9999px;
+            padding: 2px;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .toggle-switch.active { background: var(--accent); }
+        .toggle-switch.inactive { background: var(--border-light); }
+        .toggle-switch .knob {
+            width: 20px; height: 20px;
+            background: white;
+            border-radius: 9999px;
+            transition: transform 0.2s;
+        }
+        .toggle-switch.active .knob { transform: translateX(24px); }
+        html[dir="rtl"] .toggle-switch.active .knob { transform: translateX(-24px); }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border-light);
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+        }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-light);
+        }
+        html[dir="rtl"] .data-table th { text-align: right; }
+        .data-table td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background-color: var(--hover-bg); }
+
+        .rating-star { color: var(--rating-star); }
+    </style>
+</head>
+
+<body class="antialiased h-screen overflow-hidden w-full">
+
+    <!-- TOP BAR -->
+    <header class="border-b border-border bg-card sticky top-0 z-50 w-full">
+        <div class="max-w-[1920px] mx-auto px-2 sm:px-6 lg:px-10 py-3 flex items-center justify-between gap-1 sm:gap-3">
+
+            <div class="flex items-center gap-1 sm:gap-3">
+                <button id="mobile-menu-toggle"
+                    class="xl:hidden p-1.5 sm:p-2 -ml-1 sm:-ml-2 rounded-xl hover:bg-accent/10 transition text-primary"
+                    title="Open Menu">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <a href="index.html" class="flex items-center gap-2 shrink-0 text-2xl font-bold tracking-tight text-accent" style="font-weight: 700 !important;">
+                    <i class="fas fa-car"></i>SelfDrive
+                </a>
+            </div>
+
+            <div class="flex items-center gap-1 sm:gap-3 shrink-0 rtl:flex-row-reverse">
+                <div class="hidden md:flex items-center bg-body rounded-full px-4 py-2 border border-border">
+                    <i class="fas fa-search text-secondary text-sm mr-2"></i>
+                    <input type="text" placeholder="Search cars, bookings..." class="bg-transparent border-none outline-none text-sm w-40 lg:w-56 text-primary placeholder-secondary">
+                </div>
+
+                <button id="lang-toggle" class="p-1.5 sm:p-2 rounded-full hover:bg-accent/10 transition text-primary" title="Toggle RTL/LTR">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+
+                <button id="theme-toggle-user" class="p-1.5 sm:p-2 rounded-full hover:bg-accent/10 transition text-primary">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon hidden"></i>
+                </button>
+
+                <div class="relative">
+                    <button class="p-1.5 sm:p-2 rounded-full hover:bg-accent/10 transition text-primary relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                </div>
+
+                <div class="relative flex items-center gap-1.5 sm:gap-2 pl-1.5 sm:pl-3 border-l border-border rtl:border-l-0 rtl:border-r min-w-0">
+                    <div class="relative flex-shrink-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-accent/10 border border-accent flex items-center justify-center text-accent font-semibold">
+                            <i class="fas fa-user text-xs"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 status-pulse"></span>
+                    </div>
+                    <div class="hidden sm:block text-sm">
+                        <p class="font-semibold leading-none">Alex Carter</p>
+                        <p class="text-[10px] text-secondary mt-1 uppercase tracking-widest font-semibold">Gold Member</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="mobile-overlay" class="xl:hidden"></div>
+
+    <!-- MAIN LAYOUT -->
+    <main class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-10 py-6 h-[calc(100vh-64px)] w-full relative">
+        <div class="flex flex-col xl:flex-row gap-4 lg:gap-6 xl:gap-10 h-full">
+
+            <!-- SIDEBAR -->
+            <aside id="sidebar-container"
+                class="fixed xl:static top-0 left-0 rtl:right-0 rtl:left-auto h-full xl:h-auto w-72 lg:w-72 xl:w-80 z-[60] xl:z-10 transform -translate-x-full rtl:translate-x-full xl:translate-x-0 xl:rtl:translate-x-0 transition-transform duration-300 ease-in-out bg-card xl:bg-transparent flex-shrink-0">
+                <div class="dash-card p-5 h-full overflow-y-auto custom-scrollbar border-r xl:border border-border xl:rounded-[1.25rem] rounded-none shadow-none xl:shadow-md">
+
+                    <div class="flex xl:hidden justify-between items-center mb-6 px-2">
+                        <div class="flex items-center gap-2 text-accent">
+                            <i class="fas fa-bars-staggered"></i>
+                            <span class="text-xs font-medium uppercase tracking-widest">My Menu</span>
+                        </div>
+                        <button id="close-sidebar" class="p-2 hover:bg-accent/10 rounded-lg text-primary">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex xl:hidden items-center gap-3 mb-6 px-2 pb-6 border-b border-border">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-accent/10 border border-accent flex items-center justify-center text-accent font-semibold">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                            <span class="absolute bottom-0 right-0 status-pulse"></span>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-primary leading-tight">Alex Carter</p>
+                            <p class="text-[10px] text-secondary mt-0.5 uppercase tracking-widest font-medium">Gold Member</p>
+                        </div>
+                    </div>
+
+                    <nav class="flex flex-col gap-1">
+                        <p class="text-[10px] uppercase tracking-widest text-secondary font-medium mt-2 mb-2 px-2">My Garage</p>
+                        <a href="#" onclick="activateSection('overview'); return false;" data-section="overview" class="sidebar-link active">
+                            <i class="fas fa-house-chimney w-5"></i>
+                            <span>Dashboard Home</span>
+                        </a>
+                        <a href="#" onclick="activateSection('browse'); return false;" data-section="browse" class="sidebar-link">
+                            <i class="fas fa-car-side w-5"></i>
+                            <span>Browse Cars</span>
+                        </a>
+                        <a href="#" onclick="activateSection('bookings'); return false;" data-section="bookings" class="sidebar-link">
+                            <i class="fas fa-calendar-check w-5"></i>
+                            <span>My Bookings</span>
+                            <span class="ml-auto bg-accent/20 text-accent text-[10px] font-semibold px-1.5 py-0.5 rounded-full">2</span>
+                        </a>
+
+                        <p class="text-[10px] uppercase tracking-widest text-secondary font-medium mt-4 mb-2 px-2">History</p>
+                        <a href="#" onclick="activateSection('trips'); return false;" data-section="trips" class="sidebar-link">
+                            <i class="fas fa-route w-5"></i>
+                            <span>Trip History</span>
+                        </a>
+                        <a href="#" onclick="activateSection('payments'); return false;" data-section="payments" class="sidebar-link">
+                            <i class="fas fa-credit-card w-5"></i>
+                            <span>Payments</span>
+                        </a>
+
+                        <p class="text-[10px] uppercase tracking-widest text-secondary font-medium mt-4 mb-2 px-2">Account</p>
+                        <a href="#" onclick="activateSection('support'); return false;" data-section="support" class="sidebar-link">
+                            <i class="fas fa-headset w-5"></i>
+                            <span>Help & Support</span>
+                        </a>
+                        <a href="#" onclick="activateSection('settings'); return false;" data-section="settings" class="sidebar-link">
+                            <i class="fas fa-sliders w-5"></i>
+                            <span>Settings</span>
+                        </a>
+                        <a href="#" onclick="activateSection('logout'); return false;" class="sidebar-link logout mt-2 text-red-500">
+                            <i class="fas fa-power-off w-5"></i>
+                            <span>Log Out</span>
+                        </a>
+                    </nav>
+
+                    <div class="mt-8 pt-4 border-t border-border">
+                        <p class="text-[10px] uppercase tracking-widest text-secondary font-medium mb-3 px-1">Next Trip</p>
+                        <div class="bg-body rounded-xl p-3 border border-border">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span class="text-xs font-semibold">Confirmed</span>
+                            </div>
+                            <p class="text-xs font-semibold text-primary">Ford Mustang · Sport Coupe</p>
+                            <p class="text-[11px] text-secondary mt-1">Apr 12 · 10:00 AM</p>
+                            <div class="flex items-center gap-2 mt-2 pt-2 border-t border-border">
+                                <i class="fas fa-map-marker-alt text-accent text-[10px]"></i>
+                                <span class="text-[11px] text-secondary">Downtown LA Branch</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CONTENT AREA -->
+            <div class="flex-1 min-w-0 overflow-y-auto custom-scrollbar pr-2">
+
+                <!-- ==================== OVERVIEW ==================== -->
+                <div id="overview" class="dash-section">
+                    <div class="dash-card p-5 sm:p-7 reveal active mb-6" style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: white;">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                                <h2 class="text-2xl sm:text-3xl font-bold mb-2" style="font-weight: 700 !important;">Welcome back, Alex 🚗</h2>
+                                <p class="text-white/85 text-sm max-w-xl">Your Ford Mustang is confirmed for Apr 12. Pickup is at our Downtown LA branch — arrive 15 minutes early with your driver's license.</p>
+                            </div>
+                            <div class="flex gap-2 flex-wrap">
+                                <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider">Apr 09, 2026</span>
+                                <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
+                                    <i class="fas fa-circle text-[6px]"></i> Gold Member
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+                        <div class="dash-card p-6 reveal">
+                            <div class="flex justify-between items-start gap-4">
+                                <div>
+                                    <p class="text-secondary text-xs uppercase tracking-wider font-medium">Upcoming Trips</p>
+                                    <p class="text-3xl font-bold mt-2">2</p>
+                                    <p class="text-accent text-xs font-medium mt-2 flex items-center gap-1">
+                                        <i class="fas fa-arrow-up"></i> Next: Apr 12
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-calendar-check text-accent text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-border flex gap-4 text-xs">
+                                <span><span class="font-semibold">1</span> <span class="text-secondary">this week</span></span>
+                                <span><span class="font-semibold">1</span> <span class="text-secondary">next week</span></span>
+                            </div>
+                        </div>
+
+                        <div class="dash-card p-6 reveal">
+                            <div class="flex justify-between items-start gap-4">
+                                <div>
+                                    <p class="text-secondary text-xs uppercase tracking-wider font-medium">Total Trips</p>
+                                    <p class="text-3xl font-bold mt-2">24</p>
+                                    <p class="text-accent text-xs font-medium mt-2 flex items-center gap-1">
+                                        <i class="fas fa-arrow-up"></i> +3 this month
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-route text-accent text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-border flex gap-4 text-xs">
+                                <span><span class="font-semibold">1,840</span> <span class="text-secondary">miles</span></span>
+                                <span><span class="font-semibold">12</span> <span class="text-secondary">cities</span></span>
+                            </div>
+                        </div>
+
+                        <div class="dash-card p-6 reveal">
+                            <div class="flex justify-between items-start gap-4">
+                                <div>
+                                    <p class="text-secondary text-xs uppercase tracking-wider font-medium">Loyalty Points</p>
+                                    <p class="text-3xl font-bold mt-2">2,840</p>
+                                    <p class="text-accent text-xs font-medium mt-2 flex items-center gap-1">
+                                        <i class="fas fa-gift"></i> 160 to next tier
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-star text-accent text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-border">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 85%"></div>
+                                </div>
+                                <p class="text-[10px] text-secondary mt-1.5 text-center">85% to Platinum</p>
+                            </div>
+                        </div>
+
+                        <div class="dash-card p-6 reveal">
+                            <div class="flex justify-between items-start gap-4">
+                                <div>
+                                    <p class="text-secondary text-xs uppercase tracking-wider font-medium">Saved Cars</p>
+                                    <p class="text-3xl font-bold mt-2">5</p>
+                                    <p class="text-accent text-xs font-medium mt-2 flex items-center gap-1">
+                                        <i class="fas fa-heart"></i> 2 available now
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-heart text-accent text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-border flex gap-4 text-xs">
+                                <span><span class="font-semibold">3</span> <span class="text-secondary">SUVs</span></span>
+                                <span><span class="font-semibold">2</span> <span class="text-secondary">Sports</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="dash-card p-6 lg:col-span-2 reveal">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="font-semibold text-lg">Upcoming Trips</h3>
+                                <button onclick="activateSection('bookings'); return false;" class="text-xs text-accent font-semibold hover:underline">View All</button>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="flex flex-col sm:flex-row gap-4 p-4 bg-body rounded-2xl border border-border">
+                                    <img src="assets/images/img_53.jpg" alt="Ford Mustang" class="w-full sm:w-32 h-24 rounded-xl object-cover">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                                            <p class="font-semibold text-sm">Ford Mustang · Sport Coupe</p>
+                                            <span class="badge-confirmed">Confirmed</span>
+                                        </div>
+                                        <p class="text-xs text-secondary mt-1"><i class="fas fa-calendar mr-1"></i> Apr 12 – Apr 15, 2026 (3 days)</p>
+                                        <p class="text-xs text-secondary mt-1"><i class="fas fa-map-marker-alt mr-1"></i> Pickup: Downtown LA Branch</p>
+                                        <div class="flex justify-between items-center mt-3">
+                                            <span class="text-sm font-bold text-accent">$267</span>
+                                            <button class="text-xs text-accent font-semibold hover:underline">Manage Booking <i class="fas fa-arrow-right text-[10px]"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row gap-4 p-4 bg-body rounded-2xl border border-border">
+                                    <img src="assets/images/img_54.jpg" alt="Family SUV" class="w-full sm:w-32 h-24 rounded-xl object-cover">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                                            <p class="font-semibold text-sm">Honda CR-V · Family SUV</p>
+                                            <span class="badge-pending">Awaiting Payment</span>
+                                        </div>
+                                        <p class="text-xs text-secondary mt-1"><i class="fas fa-calendar mr-1"></i> Apr 20 – Apr 25, 2026 (5 days)</p>
+                                        <p class="text-xs text-secondary mt-1"><i class="fas fa-map-marker-alt mr-1"></i> Pickup: LAX Airport Branch</p>
+                                        <div class="flex justify-between items-center mt-3">
+                                            <span class="text-sm font-bold text-accent">$345</span>
+                                            <button class="text-xs text-accent font-semibold hover:underline">Complete Payment <i class="fas fa-arrow-right text-[10px]"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="activateSection('browse'); return false;" class="w-full mt-5 py-3 text-xs font-semibold uppercase tracking-wider text-accent border border-accent/20 rounded-xl hover:bg-accent/5 transition">
+                                <i class="fas fa-plus mr-1"></i> Book Another Car
+                            </button>
+                        </div>
+
+                        <div class="dash-card p-6 reveal">
+                            <h3 class="font-semibold text-lg mb-4">Recent Activity</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold">Booking confirmed</p>
+                                        <p class="text-xs text-secondary">Ford Mustang · 2h ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-star text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold">Review submitted</p>
+                                        <p class="text-xs text-secondary">5★ for Toyota Corolla · Yesterday</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-credit-card text-amber-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold">Payment processed</p>
+                                        <p class="text-xs text-secondary">$89 · Visa ··· 4242 · 2 days ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-heart text-pink-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold">Car saved to wishlist</p>
+                                        <p class="text-xs text-secondary">Tesla Model 3 · 3 days ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dash-card p-6 reveal">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="font-semibold text-lg">Recommended For You</h3>
+                            <button onclick="activateSection('browse'); return false;" class="text-xs text-accent font-semibold hover:underline">View All</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            <div class="border border-border rounded-2xl overflow-hidden group hover:shadow-lg transition-all">
+                                <div class="relative h-32 overflow-hidden">
+                                    <img src="assets/images/img_83.jpg" alt="Economy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-semibold text-sm">Toyota Corolla</h4>
+                                    <p class="text-xs text-secondary mt-1">Economy · 5 seats · Petrol</p>
+                                    <div class="flex justify-between items-center mt-3">
+                                        <span class="text-accent font-bold">$39<span class="text-xs font-normal text-secondary">/day</span></span>
+                                        <button class="text-xs btn-primary px-3 py-1.5 font-semibold">Book</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border border-border rounded-2xl overflow-hidden group hover:shadow-lg transition-all">
+                                <div class="relative h-32 overflow-hidden">
+                                    <img src="assets/images/img_84.jpg" alt="Sport" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-semibold text-sm">Ford Mustang</h4>
+                                    <p class="text-xs text-secondary mt-1">Sport · 4 seats · Petrol</p>
+                                    <div class="flex justify-between items-center mt-3">
+                                        <span class="text-accent font-bold">$89<span class="text-xs font-normal text-secondary">/day</span></span>
+                                        <button class="text-xs btn-primary px-3 py-1.5 font-semibold">Book</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border border-border rounded-2xl overflow-hidden group hover:shadow-lg transition-all">
+                                <div class="relative h-32 overflow-hidden">
+                                    <img src="assets/images/img_85.jpg" alt="Tesla" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-semibold text-sm">Tesla Model 3</h4>
+                                    <p class="text-xs text-secondary mt-1">Electric · 5 seats · Auto</p>
+                                    <div class="flex justify-between items-center mt-3">
+                                        <span class="text-accent font-bold">$99<span class="text-xs font-normal text-secondary">/day</span></span>
+                                        <button class="text-xs btn-primary px-3 py-1.5 font-semibold">Book</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== BROWSE CARS ==================== -->
+                <div id="browse" class="dash-section hidden">
+                    <div class="dash-card p-5 sm:p-7 reveal active">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                            <h2 class="text-xl sm:text-2xl font-bold text-primary flex items-center gap-2" style="font-weight: 700 !important;">
+                                <i class="fas fa-car-side text-accent"></i> Browse Available Cars
+                            </h2>
+                            <div class="flex gap-2 flex-wrap">
+                                <select class="bg-body border border-border rounded-full px-4 py-2 text-xs font-medium">
+                                    <option>All Categories</option>
+                                    <option>Economy</option>
+                                    <option>SUV</option>
+                                    <option>Sport</option>
+                                    <option>Electric</option>
+                                </select>
+                                <select class="bg-body border border-border rounded-full px-4 py-2 text-xs font-medium">
+                                    <option>Price: Low to High</option>
+                                    <option>Price: High to Low</option>
+                                    <option>Rating</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="dash-card overflow-hidden group">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/images/img_86.jpg" alt="Corolla" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                    <button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-accent shadow-md hover:bg-white transition">
+                                        <i class="fas fa-heart text-sm"></i>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <h4 class="font-semibold text-base">Toyota Corolla</h4>
+                                    <p class="text-xs text-secondary mt-1">Economy · Toyota or similar</p>
+                                    <div class="flex items-center gap-3 text-xs text-secondary mt-3">
+                                        <span><i class="fas fa-user mr-1"></i>5</span>
+                                        <span><i class="fas fa-suitcase mr-1"></i>2</span>
+                                        <span><i class="fas fa-gas-pump mr-1"></i>Petrol</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-3">
+                                        <i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star-half-alt rating-star text-xs"></i>
+                                        <span class="text-xs text-secondary ml-1">(4.8)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                                        <div>
+                                            <span class="text-xl font-bold text-accent">$39</span>
+                                            <span class="text-xs text-secondary">/day</span>
+                                        </div>
+                                        <button class="btn-primary px-5 py-2 text-xs font-semibold">Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dash-card overflow-hidden group">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/images/img_87.jpg" alt="Mustang" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                    <button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-accent shadow-md hover:bg-white transition">
+                                        <i class="fas fa-heart text-sm"></i>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <h4 class="font-semibold text-base">Ford Mustang</h4>
+                                    <p class="text-xs text-secondary mt-1">Sport · Ford or similar</p>
+                                    <div class="flex items-center gap-3 text-xs text-secondary mt-3">
+                                        <span><i class="fas fa-user mr-1"></i>4</span>
+                                        <span><i class="fas fa-suitcase mr-1"></i>1</span>
+                                        <span><i class="fas fa-gas-pump mr-1"></i>Petrol</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-3">
+                                        <i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i>
+                                        <span class="text-xs text-secondary ml-1">(5.0)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                                        <div>
+                                            <span class="text-xl font-bold text-accent">$89</span>
+                                            <span class="text-xs text-secondary">/day</span>
+                                        </div>
+                                        <button class="btn-primary px-5 py-2 text-xs font-semibold">Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dash-card overflow-hidden group">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/images/img_88.jpg" alt="CR-V" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                    <button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-accent shadow-md hover:bg-white transition">
+                                        <i class="fas fa-heart text-sm"></i>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <h4 class="font-semibold text-base">Honda CR-V</h4>
+                                    <p class="text-xs text-secondary mt-1">Family SUV · Honda or similar</p>
+                                    <div class="flex items-center gap-3 text-xs text-secondary mt-3">
+                                        <span><i class="fas fa-user mr-1"></i>7</span>
+                                        <span><i class="fas fa-suitcase mr-1"></i>4</span>
+                                        <span><i class="fas fa-gas-pump mr-1"></i>Hybrid</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-3">
+                                        <i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="far fa-star rating-star text-xs"></i>
+                                        <span class="text-xs text-secondary ml-1">(4.6)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                                        <div>
+                                            <span class="text-xl font-bold text-accent">$69</span>
+                                            <span class="text-xs text-secondary">/day</span>
+                                        </div>
+                                        <button class="btn-primary px-5 py-2 text-xs font-semibold">Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dash-card overflow-hidden group">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/images/img_89.jpg" alt="Tesla" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                    <button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-accent shadow-md hover:bg-white transition">
+                                        <i class="fas fa-heart text-sm"></i>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <h4 class="font-semibold text-base">Tesla Model 3</h4>
+                                    <p class="text-xs text-secondary mt-1">Electric · Tesla</p>
+                                    <div class="flex items-center gap-3 text-xs text-secondary mt-3">
+                                        <span><i class="fas fa-user mr-1"></i>5</span>
+                                        <span><i class="fas fa-suitcase mr-1"></i>2</span>
+                                        <span><i class="fas fa-bolt mr-1"></i>Electric</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-3">
+                                        <i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i>
+                                        <span class="text-xs text-secondary ml-1">(4.9)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                                        <div>
+                                            <span class="text-xl font-bold text-accent">$99</span>
+                                            <span class="text-xs text-secondary">/day</span>
+                                        </div>
+                                        <button class="btn-primary px-5 py-2 text-xs font-semibold">Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dash-card overflow-hidden group">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/images/img_90.jpg" alt="BMW" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                    <button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-accent shadow-md hover:bg-white transition">
+                                        <i class="fas fa-heart text-sm"></i>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <h4 class="font-semibold text-base">BMW 5 Series</h4>
+                                    <p class="text-xs text-secondary mt-1">Luxury · BMW</p>
+                                    <div class="flex items-center gap-3 text-xs text-secondary mt-3">
+                                        <span><i class="fas fa-user mr-1"></i>5</span>
+                                        <span><i class="fas fa-suitcase mr-1"></i>3</span>
+                                        <span><i class="fas fa-gas-pump mr-1"></i>Petrol</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-3">
+                                        <i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i>
+                                        <span class="text-xs text-secondary ml-1">(5.0)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                                        <div>
+                                            <span class="text-xl font-bold text-accent">$129</span>
+                                            <span class="text-xs text-secondary">/day</span>
+                                        </div>
+                                        <button class="btn-primary px-5 py-2 text-xs font-semibold">Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dash-card overflow-hidden group">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/images/img_91.jpg" alt="Jeep" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <span class="absolute top-3 left-3 status-badge badge-active">Available</span>
+                                    <button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-accent shadow-md hover:bg-white transition">
+                                        <i class="fas fa-heart text-sm"></i>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <h4 class="font-semibold text-base">Jeep Wrangler</h4>
+                                    <p class="text-xs text-secondary mt-1">Off-Road · Jeep</p>
+                                    <div class="flex items-center gap-3 text-xs text-secondary mt-3">
+                                        <span><i class="fas fa-user mr-1"></i>5</span>
+                                        <span><i class="fas fa-suitcase mr-1"></i>3</span>
+                                        <span><i class="fas fa-gas-pump mr-1"></i>Petrol</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-3">
+                                        <i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star rating-star text-xs"></i><i class="fas fa-star-half-alt rating-star text-xs"></i>
+                                        <span class="text-xs text-secondary ml-1">(4.7)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                                        <div>
+                                            <span class="text-xl font-bold text-accent">$79</span>
+                                            <span class="text-xs text-secondary">/day</span>
+                                        </div>
+                                        <button class="btn-primary px-5 py-2 text-xs font-semibold">Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== MY BOOKINGS ==================== -->
+                <div id="bookings" class="dash-section hidden">
+                    <div class="dash-card p-5 sm:p-7 reveal active">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                            <h2 class="text-xl sm:text-2xl font-bold text-primary flex items-center gap-2" style="font-weight: 700 !important;">
+                                <i class="fas fa-calendar-check text-accent"></i> My Bookings
+                            </h2>
+                            <button onclick="activateSection('browse'); return false;" class="px-6 py-3 btn-primary rounded-full text-xs font-bold uppercase tracking-widest">
+                                <i class="fas fa-plus mr-1"></i> New Booking
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">2</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Active</p>
+                            </div>
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">24</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Total</p>
+                            </div>
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">1</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Pending Payment</p>
+                            </div>
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">22</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Completed</p>
+                            </div>
+                        </div>
+
+                        <h3 class="font-semibold text-lg mb-4">Active Bookings</h3>
+                        <div class="space-y-3 mb-8">
+                            <div class="dash-card p-4 flex flex-col sm:flex-row gap-4">
+                                <img src="assets/images/img_92.jpg" alt="Mustang" class="w-full sm:w-32 h-24 rounded-xl object-cover">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                                        <p class="font-semibold text-sm">Ford Mustang · Sport Coupe</p>
+                                        <span class="badge-confirmed">Confirmed</span>
+                                    </div>
+                                    <p class="text-xs text-secondary mt-1"><i class="fas fa-calendar mr-1"></i> Apr 12 – Apr 15, 2026 · 3 days</p>
+                                    <p class="text-xs text-secondary mt-1"><i class="fas fa-map-marker-alt mr-1"></i> Downtown LA Branch · Booking #BK-4821</p>
+                                    <div class="flex justify-between items-center mt-3 flex-wrap gap-2">
+                                        <span class="text-sm font-bold text-accent">$267 total</span>
+                                        <div class="flex gap-2">
+                                            <button class="px-3 py-1.5 border border-border rounded-full text-xs font-semibold hover:bg-body transition">Modify</button>
+                                            <button class="px-3 py-1.5 btn-outline rounded-full text-xs font-semibold">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dash-card p-4 flex flex-col sm:flex-row gap-4">
+                                <img src="assets/images/img_93.jpg" alt="CR-V" class="w-full sm:w-32 h-24 rounded-xl object-cover">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                                        <p class="font-semibold text-sm">Honda CR-V · Family SUV</p>
+                                        <span class="badge-pending">Awaiting Payment</span>
+                                    </div>
+                                    <p class="text-xs text-secondary mt-1"><i class="fas fa-calendar mr-1"></i> Apr 20 – Apr 25, 2026 · 5 days</p>
+                                    <p class="text-xs text-secondary mt-1"><i class="fas fa-map-marker-alt mr-1"></i> LAX Airport Branch · Booking #BK-4798</p>
+                                    <div class="flex justify-between items-center mt-3 flex-wrap gap-2">
+                                        <span class="text-sm font-bold text-accent">$345 total</span>
+                                        <button class="px-3 py-1.5 btn-primary rounded-full text-xs font-semibold">Complete Payment</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="font-semibold text-lg mb-4">Past Bookings</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-body rounded-xl text-sm border border-border">
+                                <div>
+                                    <p class="font-semibold text-xs">Toyota Corolla · Economy</p>
+                                    <p class="text-[11px] text-secondary mt-0.5">Apr 02 – Apr 05, 2026 · 3 days</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="badge-completed text-[10px]">Completed</span>
+                                    <span class="text-xs font-semibold">$117</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-body rounded-xl text-sm border border-border">
+                                <div>
+                                    <p class="font-semibold text-xs">Jeep Wrangler · Off-Road</p>
+                                    <p class="text-[11px] text-secondary mt-0.5">Mar 22 – Mar 25, 2026 · 3 days</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="badge-completed text-[10px]">Completed</span>
+                                    <span class="text-xs font-semibold">$237</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-body rounded-xl text-sm border border-border">
+                                <div>
+                                    <p class="font-semibold text-xs">BMW 5 Series · Luxury</p>
+                                    <p class="text-[11px] text-secondary mt-0.5">Mar 10 – Mar 12, 2026 · 2 days</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="badge-completed text-[10px]">Completed</span>
+                                    <span class="text-xs font-semibold">$258</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== TRIP HISTORY ==================== -->
+                <div id="trips" class="dash-section hidden">
+                    <div class="dash-card p-5 sm:p-7 reveal active">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                            <h2 class="text-xl sm:text-2xl font-bold text-primary flex items-center gap-2" style="font-weight: 700 !important;">
+                                <i class="fas fa-route text-accent"></i> Trip History
+                            </h2>
+                            <button class="px-5 py-2.5 btn-outline rounded-full text-xs font-bold uppercase tracking-widest">
+                                <i class="fas fa-download mr-1"></i> Export History
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">24</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Total Trips</p>
+                            </div>
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">1,840</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Miles Driven</p>
+                            </div>
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">72</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Days Rented</p>
+                            </div>
+                            <div class="bg-body rounded-2xl p-4 text-center border border-border">
+                                <p class="text-2xl font-bold text-accent">$4,280</p>
+                                <p class="text-[10px] text-secondary uppercase tracking-wider mt-1">Total Spent</p>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Car</th>
+                                        <th>Duration</th>
+                                        <th>Pickup Location</th>
+                                        <th>Miles</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-xs text-secondary">Apr 02 – Apr 05</td>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-lg overflow-hidden">
+                                                    <img src="assets/images/img_55.jpg" class="w-full h-full object-cover">
+                                                </div>
+                                                <span class="font-semibold text-sm">Toyota Corolla</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-xs text-secondary">3 days</td>
+                                        <td class="text-xs text-secondary">Downtown LA</td>
+                                        <td class="text-xs">240</td>
+                                        <td class="font-bold text-sm">$117</td>
+                                        <td><span class="badge-completed text-[10px]">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-xs text-secondary">Mar 22 – Mar 25</td>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-lg overflow-hidden">
+                                                    <img src="assets/images/img_56.jpg" class="w-full h-full object-cover">
+                                                </div>
+                                                <span class="font-semibold text-sm">Jeep Wrangler</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-xs text-secondary">3 days</td>
+                                        <td class="text-xs text-secondary">LAX Airport</td>
+                                        <td class="text-xs">380</td>
+                                        <td class="font-bold text-sm">$237</td>
+                                        <td><span class="badge-completed text-[10px]">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-xs text-secondary">Mar 10 – Mar 12</td>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-lg overflow-hidden">
+                                                    <img src="assets/images/img_57.jpg" class="w-full h-full object-cover">
+                                                </div>
+                                                <span class="font-semibold text-sm">BMW 5 Series</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-xs text-secondary">2 days</td>
+                                        <td class="text-xs text-secondary">Beverly Hills</td>
+                                        <td class="text-xs">180</td>
+                                        <td class="font-bold text-sm">$258</td>
+                                        <td><span class="badge-completed text-[10px]">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-xs text-secondary">Feb 28 – Mar 02</td>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-lg overflow-hidden">
+                                                    <img src="assets/images/img_58.jpg" class="w-full h-full object-cover">
+                                                </div>
+                                                <span class="font-semibold text-sm">Tesla Model 3</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-xs text-secondary">2 days</td>
+                                        <td class="text-xs text-secondary">Santa Monica</td>
+                                        <td class="text-xs">320</td>
+                                        <td class="font-bold text-sm">$198</td>
+                                        <td><span class="badge-completed text-[10px]">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-xs text-secondary">Feb 14 – Feb 18</td>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-lg overflow-hidden">
+                                                    <img src="assets/images/img_59.jpg" class="w-full h-full object-cover">
+                                                </div>
+                                                <span class="font-semibold text-sm">Honda CR-V</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-xs text-secondary">4 days</td>
+                                        <td class="text-xs text-secondary">Downtown LA</td>
+                                        <td class="text-xs">420</td>
+                                        <td class="font-bold text-sm">$276</td>
+                                        <td><span class="badge-completed text-[10px]">Completed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== PAYMENTS ==================== -->
+                <div id="payments" class="dash-section hidden">
+                    <div class="dash-card p-5 sm:p-7 reveal active">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                            <h2 class="text-xl sm:text-2xl font-bold text-primary flex items-center gap-2" style="font-weight: 700 !important;">
+                                <i class="fas fa-credit-card text-accent"></i> Payments & Billing
+                            </h2>
+                            <button class="px-6 py-3 btn-primary rounded-full text-xs font-bold uppercase tracking-widest">
+                                <i class="fas fa-plus mr-1"></i> Add Card
+                            </button>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div class="rounded-2xl p-6 text-white" style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);">
+                                <p class="text-white/70 text-xs uppercase tracking-wider font-semibold">Upcoming Payment</p>
+                                <p class="text-4xl font-bold mt-1">$345.00</p>
+                                <p class="text-white/70 text-xs mt-2">Due Apr 15, 2026 · Honda CR-V Booking</p>
+                                <button class="mt-4 bg-white text-accent font-bold px-6 py-2.5 rounded-full text-xs uppercase tracking-widest hover:scale-105 transition">
+                                    Pay Now
+                                </button>
+                            </div>
+                            <div class="dash-card p-6">
+                                <p class="text-secondary text-xs uppercase tracking-wider font-semibold mb-4">This Year's Spending</p>
+                                <div class="flex items-baseline gap-3">
+                                    <p class="text-4xl font-bold text-accent">$4,280</p>
+                                    <span class="text-sm text-accent flex items-center gap-1"><i class="fas fa-arrow-up"></i> +18%</span>
+                                </div>
+                                <div class="mt-5 pt-4 border-t border-border grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-xs text-secondary">Total Trips</p>
+                                        <p class="font-bold text-lg">24</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-secondary">Avg. per Trip</p>
+                                        <p class="font-bold text-lg">$178</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="font-semibold text-lg mb-4">Saved Payment Methods</h3>
+                        <div class="space-y-3 mb-8">
+                            <div class="flex items-center justify-between p-4 bg-body rounded-2xl border border-border">
+                                <div class="flex items-center gap-4">
+                                    <i class="fab fa-cc-visa text-3xl text-accent"></i>
+                                    <div>
+                                        <p class="font-semibold text-sm">Visa ending in 4242</p>
+                                        <p class="text-xs text-secondary">Expires 08/2028</p>
+                                    </div>
+                                </div>
+                                <span class="badge-active text-[10px]">Default</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-body rounded-2xl border border-border">
+                                <div class="flex items-center gap-4">
+                                    <i class="fab fa-cc-mastercard text-3xl text-accent"></i>
+                                    <div>
+                                        <p class="font-semibold text-sm">Mastercard ending in 8890</p>
+                                        <p class="text-xs text-secondary">Expires 11/2027</p>
+                                    </div>
+                                </div>
+                                <button class="text-secondary hover:text-accent p-2"><i class="fas fa-ellipsis-vertical"></i></button>
+                            </div>
+                        </div>
+
+                        <h3 class="font-semibold text-lg mb-4">Recent Transactions</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-body rounded-xl text-sm border border-border">
+                                <span>Apr 05, 2026 · Toyota Corolla Rental</span>
+                                <span class="font-bold">$117.00</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-body rounded-xl text-sm border border-border">
+                                <span>Mar 25, 2026 · Jeep Wrangler Rental</span>
+                                <span class="font-bold">$237.00</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-body rounded-xl text-sm border border-border">
+                                <span>Mar 12, 2026 · BMW 5 Series Rental</span>
+                                <span class="font-bold">$258.00</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-body rounded-xl text-sm border border-border">
+                                <span>Mar 02, 2026 · Tesla Model 3 Rental</span>
+                                <span class="font-bold">$198.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SUPPORT ==================== -->
+                <div id="support" class="dash-section hidden">
+                    <div class="dash-card p-5 sm:p-7 reveal active">
+                        <h2 class="text-xl sm:text-2xl font-bold text-primary mb-2 flex items-center gap-2" style="font-weight: 700 !important;">
+                            <i class="fas fa-headset text-accent"></i> Help & Support
+                        </h2>
+                        <p class="text-secondary text-sm mb-8">Our team is available 24/7 to help you with bookings, roadside assistance, or any questions.</p>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div class="bg-body rounded-2xl p-6 text-center border border-border">
+                                <div class="w-14 h-14 mx-auto bg-accent/10 rounded-full flex items-center justify-center text-accent text-2xl mb-4">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h3 class="font-semibold text-lg mb-2">24/7 Roadside Support</h3>
+                                <p class="text-sm text-secondary mb-4">Immediate assistance for breakdowns, accidents, or lockouts.</p>
+                                <a href="tel:+18005552886" class="text-accent font-semibold">(800) 555-AUTO</a>
+                            </div>
+                            <div class="bg-body rounded-2xl p-6 text-center border border-border">
+                                <div class="w-14 h-14 mx-auto bg-accent/10 rounded-full flex items-center justify-center text-accent text-2xl mb-4">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3 class="font-semibold text-lg mb-2">Email Support</h3>
+                                <p class="text-sm text-secondary mb-4">Non-urgent questions answered within 2 hours.</p>
+                                <a href="mailto:hello@selfdrive.com" class="text-accent font-semibold">hello@selfdrive.com</a>
+                            </div>
+                        </div>
+
+                        <h3 class="font-semibold text-lg mb-4">Frequently Asked Questions</h3>
+                        <div class="space-y-3">
+                            <details class="bg-body rounded-2xl p-4 cursor-pointer border border-border">
+                                <summary class="font-semibold text-sm">Can I extend my rental?</summary>
+                                <p class="text-xs text-secondary mt-3">Yes! Just log in to your dashboard, go to My Bookings, and click "Modify" on your active booking. Extensions are subject to availability.</p>
+                            </details>
+                            <details class="bg-body rounded-2xl p-4 cursor-pointer border border-border">
+                                <summary class="font-semibold text-sm">What happens if I return the car late?</summary>
+                                <p class="text-xs text-secondary mt-3">Late returns are charged at the daily rate plus a small late fee. Contact us before your return time if you need to extend.</p>
+                            </details>
+                            <details class="bg-body rounded-2xl p-4 cursor-pointer border border-border">
+                                <summary class="font-semibold text-sm">Is fuel included in the price?</summary>
+                                <p class="text-xs text-secondary mt-3">Cars are provided with a full tank and should be returned full. If not, refueling charges apply at market rate plus a service fee.</p>
+                            </details>
+                            <details class="bg-body rounded-2xl p-4 cursor-pointer border border-border">
+                                <summary class="font-semibold text-sm">What documents do I need for pickup?</summary>
+                                <p class="text-xs text-secondary mt-3">A valid driver's license, a credit card in your name, and your booking confirmation. International drivers may need an International Driving Permit.</p>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SETTINGS ==================== -->
+                <div id="settings" class="dash-section hidden">
+                    <div class="dash-card p-5 sm:p-7 reveal active">
+                        <h2 class="text-xl sm:text-2xl font-bold text-primary mb-8 flex items-center gap-2" style="font-weight: 700 !important;">
+                            <i class="fas fa-sliders text-accent"></i> Account Settings
+                        </h2>
+
+                        <div class="space-y-8">
+                            <div>
+                                <h3 class="font-semibold text-lg mb-4 pb-2 border-b border-border">Personal Information</h3>
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="text-xs uppercase tracking-wider font-bold text-secondary block mb-2">Full Name</label>
+                                        <input type="text" value="Alex Carter" class="w-full bg-body border border-border rounded-xl px-4 py-3 text-primary outline-none focus:border-accent transition">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs uppercase tracking-wider font-bold text-secondary block mb-2">Email</label>
+                                        <input type="email" value="alex.carter@example.com" class="w-full bg-body border border-border rounded-xl px-4 py-3 text-primary outline-none focus:border-accent transition">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs uppercase tracking-wider font-bold text-secondary block mb-2">Phone</label>
+                                        <input type="tel" value="+1 (555) 234-5678" class="w-full bg-body border border-border rounded-xl px-4 py-3 text-primary outline-none focus:border-accent transition">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs uppercase tracking-wider font-bold text-secondary block mb-2">Driver's License</label>
+                                        <input type="text" value="DL-8492-2026" class="w-full bg-body border border-border rounded-xl px-4 py-3 text-primary outline-none focus:border-accent transition">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="font-semibold text-lg mb-4 pb-2 border-b border-border">Notifications</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 bg-body rounded-2xl border border-border">
+                                        <div>
+                                            <p class="font-semibold text-sm">Booking reminders</p>
+                                            <p class="text-xs text-secondary mt-1">Get notified 24h before pickup</p>
+                                        </div>
+                                        <div class="toggle-switch active" onclick="this.classList.toggle('active'); this.classList.toggle('inactive');">
+                                            <div class="knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 bg-body rounded-2xl border border-border">
+                                        <div>
+                                            <p class="font-semibold text-sm">Special offers & promos</p>
+                                            <p class="text-xs text-secondary mt-1">Exclusive discounts for members</p>
+                                        </div>
+                                        <div class="toggle-switch active" onclick="this.classList.toggle('active'); this.classList.toggle('inactive');">
+                                            <div class="knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 bg-body rounded-2xl border border-border">
+                                        <div>
+                                            <p class="font-semibold text-sm">Trip summaries</p>
+                                            <p class="text-xs text-secondary mt-1">Receive a recap after each rental</p>
+                                        </div>
+                                        <div class="toggle-switch inactive" onclick="this.classList.toggle('active'); this.classList.toggle('inactive');">
+                                            <div class="knob"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex gap-4">
+                                <button class="btn-primary px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest">Save Changes</button>
+                                <button class="btn-outline px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== LOGOUT ==================== -->
+                <div id="logout" class="dash-section hidden">
+                    <div class="dash-card p-10 reveal active text-center max-w-lg mx-auto border-red-500/20">
+                        <div class="w-20 h-20 mx-auto bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center text-red-500 text-3xl mb-6">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-primary" style="font-weight: 700 !important;">Log out of SelfDrive?</h2>
+                        <p class="text-secondary mt-3 text-sm leading-relaxed">You will need to sign in again to access your bookings and trip history.</p>
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="login.html">
+                                <button class="bg-red-500 hover:bg-red-600 text-white font-bold uppercase tracking-widest px-8 py-3 rounded-full text-[10px] transition shadow-lg">
+                                    Log Out
+                                </button>
+                            </a>
+                            <button onclick="activateSection('overview'); return false;" class="bg-body border border-border px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRUST BANNER -->
+                <div class="rounded-3xl p-6 sm:p-8 mt-10 text-white reveal flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl"
+                     style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);">
+                    <div class="flex items-center gap-4 text-center sm:text-left">
+                        <span class="w-3 h-3 bg-white rounded-full animate-ping flex-shrink-0"></span>
+                        <div>
+                            <p class="font-bold text-lg tracking-tight" style="font-weight: 700 !important;">Drive with Confidence</p>
+                            <p class="text-xs text-white/85">24/7 support · Full insurance · 50+ locations</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-white/20 backdrop-blur-md px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Gold Member Benefits</span>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <footer class="mt-12 text-center text-[10px] text-secondary border-t border-border pt-8 pb-12 w-full">
+                    <p class="uppercase tracking-[0.3em] font-bold opacity-40">© 2026 SelfDrive · Customer Dashboard v1.0</p>
+                    <div class="flex justify-center gap-8 mt-4 font-bold uppercase opacity-60 flex-wrap">
+                        <span class="hover:text-accent cursor-pointer transition">Privacy</span>
+                        <span class="hover:text-accent cursor-pointer transition">Terms</span>
+                        <span class="hover:text-accent cursor-pointer transition">Insurance</span>
+                        <span class="hover:text-accent cursor-pointer transition">Contact</span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            const html = document.documentElement;
+
+            // Theme
+            const themeBtn = document.getElementById('theme-toggle-user');
+            const applyTheme = (theme) => {
+                html.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                document.querySelectorAll('.light-icon').forEach(i => i.classList.toggle('hidden', theme === 'dark'));
+                document.querySelectorAll('.dark-icon').forEach(i => i.classList.toggle('hidden', theme === 'light'));
+            };
+            themeBtn?.addEventListener('click', () => applyTheme(html.getAttribute('data-theme') === 'light' ? 'dark' : 'light'));
+            applyTheme(localStorage.getItem('theme') || 'light');
+
+            // RTL
+            const langBtn = document.getElementById('lang-toggle');
+            langBtn?.addEventListener('click', () => {
+                const isRtl = html.getAttribute('dir') === 'rtl';
+                html.setAttribute('dir', isRtl ? 'ltr' : 'rtl');
+                localStorage.setItem('dir', isRtl ? 'ltr' : 'rtl');
+            });
+            html.setAttribute('dir', localStorage.getItem('dir') || 'ltr');
+
+            // Sidebar toggle
+            const sidebar = document.getElementById('sidebar-container');
+            const overlay = document.getElementById('mobile-overlay');
+
+            function toggleMobileMenu(isOpen) {
+                if (isOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => toggleMobileMenu(true));
+            document.getElementById('close-sidebar')?.addEventListener('click', () => toggleMobileMenu(false));
+            overlay?.addEventListener('click', () => toggleMobileMenu(false));
+
+            // Section switching
+            const sections = ['overview', 'browse', 'bookings', 'trips', 'payments', 'support', 'settings', 'logout'];
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+            window.activateSection = function (sectionId) {
+                sections.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+                const activeEl = document.getElementById(sectionId);
+                if (activeEl) {
+                    activeEl.classList.remove('hidden');
+                    activeEl.classList.add('active');
+                }
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.section === sectionId) link.classList.add('active');
+                });
+                if (window.innerWidth < 1280) {
+                    toggleMobileMenu(false);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (this.dataset.section) activateSection(this.dataset.section);
+                });
+            });
+
+            // Reveal
+            function checkReveal() {
+                document.querySelectorAll('.reveal').forEach(el => {
+                    if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add('active');
+                });
+            }
+            window.addEventListener('scroll', checkReveal);
+            window.addEventListener('load', checkReveal);
+
+            activateSection('overview');
+        })();
+    </script>
+</body>
+</html>
