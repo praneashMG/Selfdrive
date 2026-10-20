@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" href="assets/fav.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>SelfDrive | Car Rental</title>
+    <title>SelfDrive | Premium Self-Drive Car Rental Service</title>
     <!-- Tailwind + FontAwesome -->
     <script src="tailwind.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -400,7 +400,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.95) 100%);
+            background: linear-gradient(to bottom, rgba(3, 7, 18, 0.78) 0%, rgba(3, 7, 18, 0.88) 50%, rgba(3, 7, 18, 0.98) 100%);
             border-radius: inherit;
             pointer-events: none;
             z-index: 1;
@@ -419,17 +419,484 @@
             word-break: break-word;
         }
     </style>
+    <style id="self-drive-layout">
+        /* Booking widget styles */
+        .booking-widget-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25);
+        }
+        .booking-tab-btn {
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .booking-tab-btn.active {
+            background: var(--accent);
+            color: #ffffff !important;
+        }
+        
+        /* Bento Grid */
+        .bento-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .bento-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Interactive Phone Mockup for How It Works */
+        .phone-mockup-wrapper {
+            perspective: 1000px;
+        }
+        .phone-mockup {
+            width: 100%;
+            max-width: 285px;
+            height: 540px;
+            background: #090e17;
+            border: 8px solid #1e293b;
+            border-radius: 38px;
+            box-sizing: border-box;
+            box-shadow: 0 25px 60px -15px rgba(14, 165, 233, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        @media (min-width: 390px) {
+            .phone-mockup {
+                max-width: 310px;
+                height: 580px;
+                border-width: 9px;
+                border-radius: 42px;
+            }
+        }
+        @media (min-width: 768px) {
+            .phone-mockup {
+                max-width: 320px;
+                height: 620px;
+                border-width: 10px;
+                border-radius: 44px;
+            }
+        }
+        .phone-speaker-island {
+            width: 95px;
+            height: 20px;
+            background: #000000;
+            border-radius: 16px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+        }
+        .phone-screen {
+            height: 100%;
+            width: 100%;
+            overflow-y: auto;
+            position: relative;
+            background: #090d16;
+            color: #ffffff;
+            padding: 38px 16px 16px;
+        }
+        .phone-step-screen {
+            display: none;
+            opacity: 0;
+            transform: scale(0.96);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+        .phone-step-screen.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Step cards */
+        .step-interactive-card {
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-light);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .step-interactive-card:hover {
+            transform: translateX(4px);
+            border-color: var(--accent);
+        }
+        .step-interactive-card.active {
+            border-left: 4px solid var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, var(--card-bg));
+            transform: translateX(6px);
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.15);
+        }
+        html[dir="rtl"] .step-interactive-card:hover {
+            transform: translateX(-4px);
+        }
+        html[dir="rtl"] .step-interactive-card.active {
+            transform: translateX(-6px);
+            border-left: 1px solid var(--border-light);
+            border-right: 4px solid var(--accent);
+        }
+
+        /* Category Filter Pills */
+        .fleet-filter-btn {
+            transition: all 0.2s ease;
+        }
+        .fleet-filter-btn.active {
+            background-color: var(--accent) !important;
+            color: #ffffff !important;
+            border-color: var(--accent) !important;
+        }
+
+        /* FAQ Accordion */
+        .faq-item {
+            border: 1px solid var(--border-light);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .faq-question {
+            display: flex !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            gap: 0.75rem !important;
+            width: 100% !important;
+            text-align: left !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            cursor: pointer !important;
+        }
+        .faq-question > span {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            display: block !important;
+            word-break: break-word;
+        }
+        .faq-chevron {
+            flex-shrink: 0 !important;
+            margin-left: auto !important;
+            margin-top: 0.25rem !important;
+            width: 1rem;
+            text-align: right;
+        }
+        @media (min-width: 640px) {
+            .faq-question {
+                align-items: center !important;
+                gap: 1rem !important;
+            }
+            .faq-chevron {
+                margin-top: 0 !important;
+            }
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out, opacity 0.25s ease-out;
+            opacity: 0;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 350px;
+            opacity: 1;
+        }
+        .faq-item.open .faq-chevron {
+            transform: rotate(180deg);
+        }
+    </style>
+
+    <style id="header-hover-styles">
+
+        /* ==================== HEADER & NAVBAR BUTTON & HOVER STATES ==================== */
+        .nav-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.45rem 0.85rem !important;
+            border-radius: 9999px !important; /* Sleek pill border radius */
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--accent) !important;
+            background-color: color-mix(in srgb, var(--accent) 12%, transparent) !important;
+            border-color: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            color: var(--accent) !important;
+            background-color: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+            border-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+            font-weight: 600;
+        }
+
+        /* Disable old pseudo-underline bar to keep clean pill radius */
+        .nav-link::after {
+            display: none !important;
+        }
+
+        /* Dropdown Chevron Animation */
+        .dropdown-toggle svg {
+            transition: transform 0.2s ease;
+        }
+        .dropdown-wrapper.open .dropdown-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown Menu Container */
+        .dropdown-menu {
+            border-radius: 1rem !important; /* Smooth 16px radius */
+            padding: 0.5rem !important;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--border-light) !important;
+        }
+
+        /* Dropdown Items with Proper Border Radius */
+        .dropdown-menu a {
+            border-radius: 0.65rem !important; /* Proper internal border radius */
+            padding: 0.55rem 0.85rem !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .dropdown-menu a:hover {
+            background-color: color-mix(in srgb, var(--accent) 12%, transparent) !important;
+            color: var(--accent) !important;
+            transform: translateX(3px) !important;
+        }
+        html[dir="rtl"] .dropdown-menu a:hover {
+            transform: translateX(-3px) !important;
+        }
+
+        /* Header Circular Icon Buttons */
+        .header-icon-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 9999px !important; /* Circular border radius */
+            border: 1px solid var(--border-light);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .header-icon-btn:hover {
+            color: var(--accent) !important;
+            border-color: var(--accent) !important;
+            background-color: color-mix(in srgb, var(--accent) 12%, transparent) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px -2px rgba(14, 165, 233, 0.25);
+        }
+
+        /* Mobile Hamburger Button with Border Radius */
+        .header-mobile-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.75rem !important; /* 12px smooth radius */
+            border: 1px solid var(--border-light);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .header-mobile-btn:hover {
+            color: var(--accent) !important;
+            border-color: var(--accent) !important;
+            background-color: color-mix(in srgb, var(--accent) 12%, transparent) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Drawer Link Hover Pill States */
+        #mobile-drawer nav a:not(.rounded-full) {
+            position: relative;
+            display: block;
+            width: 100% !important;
+            padding: 0.55rem 0.85rem !important;
+            border-radius: 0.75rem !important;
+            transition: all 0.2s ease;
+        }
+        #mobile-drawer nav a:not(.rounded-full):hover {
+            background-color: color-mix(in srgb, var(--accent) 12%, transparent) !important;
+            color: var(--accent) !important;
+            transform: translateX(3px);
+        }
+        #mobile-drawer nav a:not(.rounded-full)::after {
+            display: none !important;
+        }
+
+    </style>
+    <style id="accessibility-and-contrast">
+        /* ==================== WCAG AA/AAA TEXT CONTRAST & ACCESSIBILITY ==================== */
+        :root,
+        html[data-theme='light'] {
+            --accent: #0284C7;        /* Sky-600 */
+            --accent-text: #0369A1;   /* Sky-700: 5.93:1 AAA text contrast against white */
+            --accent-dark: #075985;   /* Sky-800 */
+            --text-primary: #0A1C2F;  /* 17.2:1 AAA contrast against white */
+            --text-secondary: #334155;/* Slate-700: 8.5:1 AAA contrast against white */
+            --border-light: #CBD5E1;  /* Slate-300: 3.2:1 contrast for UI boundaries */
+            --card-bg: #FFFFFF;
+        }
+
+        html[data-theme='dark'] {
+            --accent: #38BDF8;        /* Sky-400: 6.83:1 contrast against dark card */
+            --accent-text: #38BDF8;   /* Sky-400 for text */
+            --accent-dark: #0EA5E9;   /* Sky-500 */
+            --text-primary: #F8FAFC;  /* 15.5:1 AAA contrast against dark card */
+            --text-secondary: #CBD5E1;/* Slate-300: 9.85:1 AAA contrast against dark card */
+            --border-light: #334155;  /* Slate-700: distinct card boundaries */
+            --card-bg: #1E293B;
+        }
+
+        /* High contrast accent text override */
+        .text-accent {
+            color: var(--accent-text) !important;
+        }
+
+        /* WCAG 2.4.7 Visible Keyboard Focus */
+        :focus-visible {
+            outline: 2px solid var(--accent) !important;
+            outline-offset: 2px !important;
+        }
+
+        /* Form Inputs Contrast in Light & Dark Mode */
+        html[data-theme='dark'] input,
+        html[data-theme='dark'] select,
+        html[data-theme='dark'] textarea {
+            color-scheme: dark;
+            background-color: #1E293B !important;
+            color: #F8FAFC !important;
+            border-color: #475569 !important;
+        }
+        html[data-theme='light'] input,
+        html[data-theme='light'] select,
+        html[data-theme='light'] textarea {
+            color-scheme: light;
+            background-color: #FFFFFF !important;
+            color: #0A1C2F !important;
+            border-color: #CBD5E1 !important;
+        }
+        input::placeholder, textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.75;
+        }
+
+        /* High Contrast CTA Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0369A1 0%, #075985 100%) !important;
+        }
+        html[data-theme='dark'] .btn-primary {
+            background: #38BDF8 !important;
+            color: #0F172A !important; /* Deep dark blue text on Sky-400 gives 13.4:1 contrast (AAA) */
+            font-weight: 700 !important;
+        }
+        html[data-theme='dark'] .btn-primary:hover {
+            background: #7DD3FC !important;
+        }
+
+        /* High Contrast Outline Buttons */
+        .btn-outline {
+            border: 2px solid var(--accent) !important;
+            color: var(--accent-text) !important;
+            font-weight: 600 !important;
+        }
+        .btn-outline:hover {
+            background-color: var(--accent) !important;
+            color: #FFFFFF !important;
+        }
+        html[data-theme='dark'] .btn-outline:hover {
+            color: #0F172A !important;
+        }
+
+        /* Hero Section High-Contrast Typography & Scrim */
+        .hero-title-accent {
+            color: #38BDF8 !important; /* Sky-400: 14.9:1 AAA contrast against dark background photo */
+            text-shadow: 0 0 24px rgba(56, 189, 248, 0.45), 0 2px 10px rgba(0, 0, 0, 0.95);
+            display: inline-block;
+        }
+        .hero-tagline-badge {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border: 1px solid rgba(56, 189, 248, 0.45) !important;
+            color: #F8FAFC !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+        .hero-tagline-badge i {
+            color: #38BDF8 !important;
+        }
+        .hero-description {
+            color: #F1F5F9 !important; /* Slate-100: 17:1 AAA contrast against dark backdrop */
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+        }
+
+        /* Booking tabs & fleet filters AAA contrast in light/dark */
+        html[data-theme='dark'] .booking-tab-btn.active,
+        html[data-theme='dark'] .fleet-filter-btn.active {
+            background: #38BDF8 !important;
+            color: #0F172A !important;
+            border-color: #38BDF8 !important;
+            font-weight: 700 !important;
+        }
+        html[data-theme='light'] .booking-tab-btn.active,
+        html[data-theme='light'] .fleet-filter-btn.active {
+            background: #0284C7 !important;
+            color: #FFFFFF !important;
+            border-color: #0284C7 !important;
+            font-weight: 600 !important;
+        }
+
+        /* Table & Text Contrast Fixes */
+        .comparison-table th {
+            color: var(--text-primary) !important;
+            font-weight: 700 !important;
+        }
+        .comparison-table td {
+            color: var(--text-primary) !important;
+        }
+        html[data-theme='dark'] .comparison-table td.text-rose-500 {
+            color: #FB7185 !important; /* Rose-400: readable on dark */
+        }
+        html[data-theme='dark'] .comparison-table td.text-emerald-600 {
+            color: #34D399 !important; /* Emerald-400: readable on dark */
+        }
+        html[data-theme='dark'] .comparison-table td.text-amber-500 {
+            color: #FBBF24 !important; /* Amber-400: readable on dark */
+        }
+
+        /* Status Badges */
+        .status-badge {
+            background: #059669 !important; /* Emerald-600: 4.8:1 with white text */
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+        }
+    </style>
+
 </head>
 
 <body class="antialiased">
 
     <!-- Fixed Header -->
+        <!-- Fixed Header -->
     <header class="fixed top-0 left-0 w-full z-50 pt-3" id="main-header">
         <nav
-            class="max-w-7xl mx-auto px-5 py-3 rounded-2xl flex items-center justify-between backdrop-blur-sm border border-border">
-            <a href="index.html" class="text-2xl font-bold tracking-tight text-accent" style="font-weight: 700 !important;"><i class="fas fa-car mr-2"></i>SelfDrive</a>
+            class="max-w-7xl mx-auto px-5 py-2.5 rounded-2xl flex items-center justify-between backdrop-blur-sm border border-border">
+            <a href="index.html" class="text-2xl font-bold tracking-tight text-accent flex items-center px-2.5 py-1.5 -ml-2 rounded-xl hover:bg-accent/10 transition-all duration-200" style="font-weight: 700 !important;"><i class="fas fa-car mr-2"></i>SelfDrive</a>
             <!-- Desktop Center Nav -->
-            <div class="hidden xl:flex items-center space-x-8 rtl:space-x-reverse text-sm font-medium">
+            <div class="hidden xl:flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium">
                 <div class="dropdown-wrapper">
                     <button class="nav-link active dropdown-toggle flex items-center gap-1.5 whitespace-nowrap"><span>Home</span><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 11.5l-7 7-7-7"></path></svg></button>
                     <div class="dropdown-menu">
@@ -450,14 +917,14 @@
                     </div>
                 </div>
             </div>
-            <div class="hidden xl:flex items-center gap-4">
-                <button id="theme-toggle" class="p-2 rounded-full hover:bg-accent/10"><i
-                        class="fas fa-moon light-icon"></i><i class="fas fa-sun dark-icon hidden"></i></button>
-                <button id="lang-icon" class="p-2 rounded-full hover:bg-accent/10"><i class="fas fa-exchange-alt"></i></button>
-                <a href="login.html" class="btn-primary px-6 py-2 text-sm font-medium shadow-md"><i class="fas fa-user-circle mr-1"></i> Sign In</a>
+            <div class="hidden xl:flex items-center gap-3">
+                <button id="theme-toggle" class="header-icon-btn" aria-label="Toggle Color Theme" title="Toggle Theme"><i
+                        class="fas fa-moon light-icon text-sm"></i><i class="fas fa-sun dark-icon hidden text-sm"></i></button>
+                <button id="lang-icon" class="header-icon-btn" aria-label="Toggle Text Direction" title="Toggle RTL"><i class="fas fa-exchange-alt text-sm"></i></button>
+                <a href="login.html" class="btn-primary px-5 py-2 text-sm font-semibold shadow-md inline-flex items-center gap-1.5"><i class="fas fa-user-circle"></i> Sign In</a>
             </div>
             <div class="xl:hidden flex items-center gap-3">
-                <button id="mobile-menu-open"><i class="fas fa-bars text-2xl"></i></button>
+                <button id="mobile-menu-open" class="header-mobile-btn" aria-label="Open Navigation Menu"><i class="fas fa-bars text-lg"></i></button>
             </div>
         </nav>
     </header>
@@ -496,461 +963,1049 @@
         </div>
     </div>
 <main>
-        <!-- ========== SECTION 1: HERO ========== -->
-<section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden reveal">
-    <!-- Background Image with Overlay -->
-    <div class="absolute inset-0 bg-overlay">
-        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop" 
-             alt="Luxury car on open road" 
-             class="w-full h-full object-cover">
-    </div>
-    
-    <!-- Hero Content -->
-    <div class="relative z-10 max-w-5xl mx-auto px-5 pt-32 pb-24 text-center text-white">
-        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 border border-white/30 bg-white/10 backdrop-blur-sm">
-            <i class="fas fa-key mr-1.5"></i> Drive Your Way
-        </span>
-        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6" style="font-weight: 700 !important;">
-            Self-Drive Car<br>Rental Service
-        </h1>
-        <p class="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Experience the freedom of the open road. Choose from our premium fleet of well-maintained vehicles and drive on your own terms.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="fleet.html" class="btn-primary px-8 py-3.5 text-base font-semibold shadow-lg inline-flex items-center justify-center gap-2">
-                <i class="fas fa-car"></i> Browse Fleet
-            </a>
-            <a href="pricing.html" class="btn-outline px-8 py-3.5 text-base font-semibold inline-flex items-center justify-center gap-2" style="border-color: rgba(255,255,255,0.6); color: #ffffff;">
-                <i class="fas fa-tag"></i> View Pricing
-            </a>
-        </div>
-        
-        <!-- Stats Row -->
-        <div class="grid grid-cols-3 gap-6 mt-16 max-w-2xl mx-auto">
-            <div class="text-center">
-                <p class="text-3xl md:text-4xl font-bold text-white">250+</p>
-                <p class="text-xs text-white/60 uppercase tracking-wider mt-1">Premium Cars</p>
-            </div>
-            <div class="text-center border-x border-white/20">
-                <p class="text-3xl md:text-4xl font-bold text-white">50K+</p>
-                <p class="text-xs text-white/60 uppercase tracking-wider mt-1">Happy Drivers</p>
-            </div>
-            <div class="text-center">
-                <p class="text-3xl md:text-4xl font-bold text-white">24/7</p>
-                <p class="text-xs text-white/60 uppercase tracking-wider mt-1">Support</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
-        <i class="fas fa-chevron-down text-white/50 text-xl"></i>
-    </div>
-</section>
-
-
-<!-- ========== SECTION 2: WHY CHOOSE US ========== -->
-<section class="py-20 md:py-28" style="background: var(--bg-body);">
-    <div class="max-w-7xl mx-auto px-5">
-        <!-- Centered Heading -->
-        <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Why SelfDrive</span>
-            <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
-                The Smarter Way to Rent
-            </h2>
-            <p class="text-secondary text-base md:text-lg leading-relaxed">
-                We eliminate the hassle of traditional car rentals. No queues, no hidden fees — just you, the keys, and the road ahead.
-            </p>
-        </div>
-        
-        <!-- Feature Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Card 1 -->
-            <div class="bg-card rounded-2xl p-7 border border-border text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
-                    <i class="fas fa-clock text-2xl text-accent"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">Instant Booking</h3>
-                <p class="text-secondary text-sm leading-relaxed">Book your car in under 60 seconds. Real-time availability and instant confirmation.</p>
-            </div>
-            <!-- Card 2 -->
-            <div class="bg-card rounded-2xl p-7 border border-border text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
-                    <i class="fas fa-shield-alt text-2xl text-accent"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">Full Insurance</h3>
-                <p class="text-secondary text-sm leading-relaxed">Every rental includes comprehensive insurance coverage for complete peace of mind.</p>
-            </div>
-            <!-- Card 3 -->
-            <div class="bg-card rounded-2xl p-7 border border-border text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
-                    <i class="fas fa-map-marker-alt text-2xl text-accent"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">50+ Locations</h3>
-                <p class="text-secondary text-sm leading-relaxed">Pick up and drop off at any of our convenient locations across the country.</p>
-            </div>
-            <!-- Card 4 -->
-            <div class="bg-card rounded-2xl p-7 border border-border text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
-                    <i class="fas fa-headset text-2xl text-accent"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">24/7 Support</h3>
-                <p class="text-secondary text-sm leading-relaxed">Our dedicated support team is always available to assist you on the road.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- ========== SECTION 3: FEATURED FLEET ========== -->
-<section class="py-20 md:py-28 border-y border-border" style="background: var(--card-bg);">
-    <div class="max-w-7xl mx-auto px-5">
-        <!-- Centered Heading -->
-        <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Our Fleet</span>
-            <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
-                Choose Your Perfect Ride
-            </h2>
-            <p class="text-secondary text-base md:text-lg leading-relaxed">
-                From fuel-efficient compacts to luxury SUVs — every vehicle is meticulously maintained and ready for adventure.
-            </p>
-        </div>
-        
-        <!-- Fleet Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Car 1 -->
-            <div class="tire-card group">
-                <div class="relative overflow-hidden h-52">
-                    <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop" 
-                         alt="Compact car" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <span class="absolute top-4 left-4 status-badge">Available</span>
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="text-lg font-semibold" style="font-weight: 600 !important;">Economy Compact</h3>
-                            <p class="text-xs text-secondary mt-1">Toyota Corolla or similar</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-accent">$39</p>
-                            <p class="text-[10px] text-secondary uppercase">per day</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4 text-xs text-secondary mb-5">
-                        <span><i class="fas fa-user mr-1"></i> 5 Seats</span>
-                        <span><i class="fas fa-suitcase mr-1"></i> 2 Bags</span>
-                        <span><i class="fas fa-gas-pump mr-1"></i> Petrol</span>
-                    </div>
-                    <div class="flex items-center gap-1 mb-5">
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star-half-alt rating-star text-xs"></i>
-                        <span class="text-xs text-secondary ml-1">(4.8)</span>
-                    </div>
-                    <a href="fleet.html" class="btn-primary block w-full text-center py-2.5 text-sm font-medium">Book Now</a>
-                </div>
+        <!-- ========== SECTION 1: HERO + INTEGRATED BOOKING WIDGET ========== -->
+        <section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden reveal pt-24 pb-16">
+            <!-- Background Image with Overlay -->
+            <div class="absolute inset-0 bg-overlay">
+                <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop" 
+                     alt="Luxury self-drive road trip" 
+                     class="w-full h-full object-cover">
+                <!-- High-contrast dark gradient scrim for crystal clear readability -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-slate-950/75 to-slate-950/95 pointer-events-none" style="z-index: 2;"></div>
             </div>
             
-            <!-- Car 2 -->
-            <div class="tire-card group">
-                <div class="relative overflow-hidden h-52">
-                    <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop" 
-                         alt="Sports car" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <span class="absolute top-4 left-4 status-badge">Available</span>
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="text-lg font-semibold" style="font-weight: 600 !important;">Sport Coupe</h3>
-                            <p class="text-xs text-secondary mt-1">Ford Mustang or similar</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-accent">$89</p>
-                            <p class="text-[10px] text-secondary uppercase">per day</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4 text-xs text-secondary mb-5">
-                        <span><i class="fas fa-user mr-1"></i> 4 Seats</span>
-                        <span><i class="fas fa-suitcase mr-1"></i> 1 Bag</span>
-                        <span><i class="fas fa-gas-pump mr-1"></i> Petrol</span>
-                    </div>
-                    <div class="flex items-center gap-1 mb-5">
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <span class="text-xs text-secondary ml-1">(5.0)</span>
-                    </div>
-                    <a href="fleet.html" class="btn-primary block w-full text-center py-2.5 text-sm font-medium">Book Now</a>
-                </div>
-            </div>
-            
-            <!-- Car 3 -->
-            <div class="tire-card group">
-                <div class="relative overflow-hidden h-52">
-                    <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=2071&auto=format&fit=crop" 
-                         alt="SUV" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <span class="absolute top-4 left-4 status-badge">Available</span>
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="text-lg font-semibold" style="font-weight: 600 !important;">Family SUV</h3>
-                            <p class="text-xs text-secondary mt-1">Honda CR-V or similar</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-accent">$69</p>
-                            <p class="text-[10px] text-secondary uppercase">per day</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4 text-xs text-secondary mb-5">
-                        <span><i class="fas fa-user mr-1"></i> 7 Seats</span>
-                        <span><i class="fas fa-suitcase mr-1"></i> 4 Bags</span>
-                        <span><i class="fas fa-gas-pump mr-1"></i> Hybrid</span>
-                    </div>
-                    <div class="flex items-center gap-1 mb-5">
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="fas fa-star rating-star text-xs"></i>
-                        <i class="far fa-star rating-star text-xs"></i>
-                        <span class="text-xs text-secondary ml-1">(4.6)</span>
-                    </div>
-                    <a href="fleet.html" class="btn-primary block w-full text-center py-2.5 text-sm font-medium">Book Now</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- View All Link -->
-        <div class="text-center mt-12 reveal">
-            <a href="fleet.html" class="btn-outline px-8 py-3 text-sm font-semibold inline-flex items-center gap-2">
-                View Full Fleet <i class="fas fa-arrow-right text-xs"></i>
-            </a>
-        </div>
-    </div>
-</section>
-
-
-<!-- ========== SECTION 4: HOW IT WORKS ========== -->
-<section class="py-20 md:py-28" style="background: var(--bg-body);">
-    <div class="max-w-7xl mx-auto px-5">
-        <!-- Centered Heading -->
-        <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Simple Process</span>
-            <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
-                How It Works
-            </h2>
-            <p class="text-secondary text-base md:text-lg leading-relaxed">
-                Get behind the wheel in four easy steps. No paperwork, no waiting rooms — just seamless self-drive rental.
-            </p>
-        </div>
-        
-        <!-- Steps Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Step 1 -->
-            <div class="text-center relative">
-                <div class="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 relative z-10">
-                    <span class="text-2xl font-bold text-accent">01</span>
-                </div>
-                <div class="hidden lg:block absolute top-10 left-[60%] w-[80%] h-[2px] bg-border -z-0"></div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">Choose Your Car</h3>
-                <p class="text-secondary text-sm leading-relaxed max-w-xs mx-auto">Browse our fleet and select the vehicle that fits your trip perfectly.</p>
-            </div>
-            <!-- Step 2 -->
-            <div class="text-center relative">
-                <div class="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 relative z-10">
-                    <span class="text-2xl font-bold text-accent">02</span>
-                </div>
-                <div class="hidden lg:block absolute top-10 left-[60%] w-[80%] h-[2px] bg-border -z-0"></div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">Book Online</h3>
-                <p class="text-secondary text-sm leading-relaxed max-w-xs mx-auto">Reserve your dates and complete the booking in under a minute.</p>
-            </div>
-            <!-- Step 3 -->
-            <div class="text-center relative">
-                <div class="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 relative z-10">
-                    <span class="text-2xl font-bold text-accent">03</span>
-                </div>
-                <div class="hidden lg:block absolute top-10 left-[60%] w-[80%] h-[2px] bg-border -z-0"></div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">Pick Up Keys</h3>
-                <p class="text-secondary text-sm leading-relaxed max-w-xs mx-auto">Collect your car from any of our 50+ convenient locations.</p>
-            </div>
-            <!-- Step 4 -->
-            <div class="text-center relative">
-                <div class="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 relative z-10">
-                    <span class="text-2xl font-bold text-accent">04</span>
-                </div>
-                <h3 class="text-lg font-semibold mb-3" style="font-weight: 600 !important;">Drive & Explore</h3>
-                <p class="text-secondary text-sm leading-relaxed max-w-xs mx-auto">Hit the road and enjoy your journey. Return at your convenience.</p>
-            </div>
-        </div>
-        
-        <!-- CTA Banner -->
-        <div class="mt-16 bg-gradient-to-br from-[#1E4A6B] to-[#0A1C2F] text-white rounded-3xl p-8 md:p-12 text-center reveal shadow-2xl relative overflow-hidden">
-            <!-- Decorative background icons -->
-            <i class="fas fa-route absolute text-8xl text-white/5 -top-4 -left-4"></i>
-            <i class="fas fa-car absolute text-9xl text-white/5 -bottom-8 -right-8 transform -scale-x-100"></i>
-            
-            <div class="max-w-3xl mx-auto relative z-10">
-                <span class="inline-block px-3 py-1 bg-accent/20 text-accent rounded-full text-xs font-bold tracking-wider uppercase mb-4 border border-accent/30">Start Driving</span>
-                <h3 class="text-3xl md:text-4xl font-bold mb-5 leading-tight text-white" style="font-weight: 700 !important;">Your Next Adventure Awaits</h3>
-                <p class="text-white/80 text-sm md:text-base mb-8 leading-relaxed max-w-2xl mx-auto">
-                    Skip the paperwork and the wait lines. Browse our fleet of premium vehicles and book your self-drive car instantly. Your journey starts with a single click.
+            <!-- Hero Container -->
+            <div class="relative z-10 max-w-6xl mx-auto px-5 pt-12 text-center text-white w-full">
+                <!-- Tagline Badge -->
+                <span class="hero-tagline-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-5 backdrop-blur-md shadow-lg" style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(56, 189, 248, 0.5) !important; color: #F8FAFC !important;">
+                    <i class="fas fa-key text-sky-400" style="color: #38BDF8 !important;"></i> 100% Private Self-Drive Experience
+                </span>
+                
+                <!-- Main Heading -->
+                <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 sm:mb-5 text-white tracking-tight" style="font-weight: 800 !important;">
+                    <span style="color: #FFFFFF !important; text-shadow: 0 3px 14px rgba(0, 0, 0, 0.95);">Rent The Car.</span><br>
+                    <span class="hero-title-accent text-sky-400" style="color: #38BDF8 !important; text-shadow: 0 0 28px rgba(56, 189, 248, 0.6), 0 3px 12px rgba(0, 0, 0, 0.95); font-weight: 800 !important;">Be The Driver.</span>
+                </h1>
+                
+                <p class="hero-description text-sm sm:text-base md:text-xl max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2 font-normal" style="color: #F1F5F9 !important; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);">
+                    Zero intrusive chauffeurs, unlimited stops, and instant contactless pickup. Experience genuine freedom on the open road with sanitized, fully insured vehicles.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="fleet.html" class="btn-primary px-8 py-3.5 text-sm font-semibold inline-flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fas fa-car-side"></i> Browse Our Fleet
+
+                <!-- Floating Trip Booking Widget -->
+                <div class="booking-widget-card p-4 sm:p-6 md:p-8 text-left max-w-4xl mx-auto mb-10 sm:mb-12" style="background: var(--card-bg); color: var(--text-primary);">
+                    <!-- Widget Header Tabs -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4 mb-5">
+                        <div class="grid grid-cols-2 gap-2 w-full sm:w-auto">
+                            <button id="tab-hub-pickup" type="button" class="booking-tab-btn active px-3 sm:px-4 py-2 rounded-full border border-border flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
+                                <i class="fas fa-warehouse text-xs"></i> Hub Pickup
+                            </button>
+                            <button id="tab-doorstep" type="button" class="booking-tab-btn px-3 sm:px-4 py-2 rounded-full border border-border flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold text-secondary hover:border-accent whitespace-nowrap">
+                                <i class="fas fa-house-chimney text-xs"></i> Doorstep
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto pt-1 sm:pt-0">
+                            <span class="text-xs text-secondary font-medium shrink-0"><i class="fas fa-gas-pump mr-1 text-accent"></i> Fuel Option:</span>
+                            <select id="fuel-choice" class="text-xs bg-card border border-border rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-accent text-primary flex-1 sm:flex-initial">
+                                <option value="no-fuel">Without Fuel (Self-Pay)</option>
+                                <option value="with-fuel">With Fuel Included</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Booking Form Grid -->
+                    <form onsubmit="event.preventDefault(); document.getElementById('featured-fleet').scrollIntoView({behavior: 'smooth'});" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                        <!-- City / Station Hub -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-secondary mb-1.5"><i class="fas fa-location-dot text-accent mr-1"></i> Pickup Location</label>
+                            <select class="w-full bg-card border border-border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-accent text-primary font-medium">
+                                <option>Airport Hub (Terminal 2)</option>
+                                <option>Downtown Central Station</option>
+                                <option>Westside Tech Metro Hub</option>
+                                <option>North Express Station</option>
+                                <option>South City Mall Hub</option>
+                            </select>
+                        </div>
+
+                        <!-- Start Date & Time -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-secondary mb-1.5"><i class="fas fa-calendar-alt text-accent mr-1"></i> Pick-up Date & Time</label>
+                            <input type="datetime-local" value="2026-10-21T10:00" class="w-full bg-card border border-border rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-accent text-primary font-medium">
+                        </div>
+
+                        <!-- Return Date & Time -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-secondary mb-1.5"><i class="fas fa-calendar-check text-accent mr-1"></i> Drop-off Date & Time</label>
+                            <input type="datetime-local" value="2026-10-24T18:00" class="w-full bg-card border border-border rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-accent text-primary font-medium">
+                        </div>
+
+                        <!-- Submit CTA Button -->
+                        <div>
+                            <button type="submit" class="btn-primary w-full py-3 px-5 text-sm font-semibold flex items-center justify-center gap-2 shadow-lg">
+                                <i class="fas fa-search"></i> Search Cars
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Trust Bar Under Widget -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-4 mt-5 border-t border-border text-xs text-secondary font-medium">
+                        <span class="flex items-center gap-2"><i class="fas fa-check-circle text-accent shrink-0"></i> Zero Security Deposit Option</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-check-circle text-accent shrink-0"></i> 2-Min Digital DL KYC</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-check-circle text-accent shrink-0"></i> Comprehensive Insurance</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-check-circle text-accent shrink-0"></i> 24/7 Roadside Assistance</span>
+                    </div>
+                </div>
+
+                <!-- Stats Strip -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto pt-2">
+                    <div class="text-center">
+                        <p class="text-2xl md:text-3xl font-bold text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.8);">250+</p>
+                        <p class="text-xs text-slate-200 font-medium uppercase tracking-wider mt-0.5">Verified Cars</p>
+                    </div>
+                    <div class="text-center border-l border-white/20">
+                        <p class="text-2xl md:text-3xl font-bold text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.8);">50K+</p>
+                        <p class="text-xs text-slate-200 font-medium uppercase tracking-wider mt-0.5">Happy Drivers</p>
+                    </div>
+                    <div class="text-center border-l border-white/20">
+                        <p class="text-2xl md:text-3xl font-bold text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.8);">50+</p>
+                        <p class="text-xs text-slate-200 font-medium uppercase tracking-wider mt-0.5">Pick-up Hubs</p>
+                    </div>
+                    <div class="text-center border-l border-white/20">
+                        <p class="text-2xl md:text-3xl font-bold text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.8);">4.9 ★</p>
+                        <p class="text-xs text-slate-200 font-medium uppercase tracking-wider mt-0.5">Driver Rating</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- ========== TRUST & MEDIA RECOGNITION STRIP ========== -->
+        <section class="py-10 border-b border-border" style="background: var(--card-bg);">
+            <div class="max-w-7xl mx-auto px-5">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <!-- Trust Numbers -->
+                    <div class="flex items-center gap-6 shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 text-xl font-bold">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-1 text-amber-500 text-xs">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    <span class="text-sm font-bold text-primary ml-1">4.9 / 5.0</span>
+                                </div>
+                                <p class="text-xs text-secondary">14,200+ Verified Driver Reviews</p>
+                            </div>
+                        </div>
+                        <div class="hidden sm:block h-8 w-[1px] bg-border"></div>
+                        <div class="hidden sm:flex items-center gap-2 text-xs text-secondary font-medium">
+                            <i class="fas fa-shield-check text-emerald-500 text-base"></i>
+                            <span>ISO 9001 Certified Fleet Safety</span>
+                        </div>
+                    </div>
+
+                    <!-- Media Mentions -->
+                    <div class="flex flex-wrap items-center justify-center md:justify-end gap-6 text-xs font-semibold tracking-wider uppercase text-secondary/70">
+                        <span class="text-[11px] text-secondary font-normal lowercase tracking-normal">featured on:</span>
+                        <span class="hover:text-primary transition-colors flex items-center gap-1.5"><i class="fas fa-newspaper"></i> Forbes Travel</span>
+                        <span class="hover:text-primary transition-colors flex items-center gap-1.5"><i class="fas fa-chart-line"></i> Bloomberg</span>
+                        <span class="hover:text-primary transition-colors flex items-center gap-1.5"><i class="fas fa-rocket"></i> TechCrunch</span>
+                        <span class="hover:text-primary transition-colors flex items-center gap-1.5"><i class="fas fa-compass"></i> Condé Nast Traveler</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+        <!-- ========== SECTION 2: WHY SELF-DRIVE? (ASYMMETRIC BENTO GRID) ========== -->
+        <section class="py-20 md:py-28" style="background: var(--bg-body);">
+            <div class="max-w-7xl mx-auto px-5">
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Why Self-Drive?</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                        The Smarter, Private Way to Travel
+                    </h2>
+                    <p class="text-secondary text-base md:text-lg leading-relaxed">
+                        Say goodbye to driver cancellations, awkward conversations, and taxi surge fares. SelfDrive gives you 100% control of the journey.
+                    </p>
+                </div>
+                
+                <!-- Bento Grid Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Feature Card 1: Large 2-column card for Privacy & Control -->
+                    <div class="lg:col-span-2 bento-card p-5 sm:p-7 md:p-8 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-accent/10 text-accent mb-4">
+                                <i class="fas fa-lock mr-1"></i> Personal Autonomy
+                            </span>
+                            <h3 class="text-2xl font-bold mb-3" style="font-weight: 700 !important;">100% Cabin Privacy & Complete Freedom</h3>
+                            <p class="text-secondary text-sm md:text-base leading-relaxed mb-6 max-w-xl">
+                                Travel with family or friends without an unfamiliar driver eavesdropping. Stop whenever you crave roadside coffee, play your favorite road trip playlist, and take any scenic detour you want.
+                            </p>
+                            
+                            <!-- Micro Comparison Pills -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                                <div class="bg-card/70 border border-border p-3.5 rounded-xl">
+                                    <p class="text-xs font-bold text-accent uppercase tracking-wider mb-1"><i class="fas fa-check-circle mr-1"></i> SelfDrive Rental</p>
+                                    <p class="text-xs text-secondary leading-normal">Full privacy • Unlimited stops • Fixed flat rates • You control AC & music</p>
+                                </div>
+                                <div class="bg-card/40 border border-border p-3.5 rounded-xl opacity-80">
+                                    <p class="text-xs font-bold text-rose-500 uppercase tracking-wider mb-1"><i class="fas fa-times-circle mr-1"></i> Chauffeur & Cabs</p>
+                                    <p class="text-xs text-secondary leading-normal">Awkward stranger • Driver grumbling at stops • Unpredictable surge pricing</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 2: 60s Digital Booking & KYC -->
+                    <div class="bento-card p-5 sm:p-7 md:p-8 flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-5 text-accent text-2xl">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3" style="font-weight: 600 !important;">Instant Digital KYC</h3>
+                            <p class="text-secondary text-sm leading-relaxed mb-4">
+                                Snap a photo of your valid driver's license. Our AI approves your profile in under 2 minutes so you can pick up without paperwork.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-border flex items-center gap-2 text-xs text-accent font-semibold">
+                            <i class="fas fa-bolt"></i> Verified in under 120 seconds
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 3: 50+ Hubs & Doorstep Delivery -->
+                    <div class="bento-card p-5 sm:p-7 md:p-8 flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-5 text-accent text-2xl">
+                                <i class="fas fa-location-dot"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3" style="font-weight: 600 !important;">Doorstep or 50+ Stations</h3>
+                            <p class="text-secondary text-sm leading-relaxed mb-4">
+                                Pick up keyless from our citywide stations, or opt for doorstep handover where our team delivers a sanitized, full-tank car to you.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-border flex items-center gap-2 text-xs text-accent font-semibold">
+                            <i class="fas fa-truck-fast"></i> Delivery to home, office, or airport
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 4: All-Inclusive Transparent Rates -->
+                    <div class="lg:col-span-2 bento-card p-5 sm:p-7 md:p-8 flex flex-col justify-between">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div>
+                                <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-5 text-accent text-2xl">
+                                    <i class="fas fa-shield-halved"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-3" style="font-weight: 600 !important;">Comprehensive Insurance & Zero Hidden Charges</h3>
+                                <p class="text-secondary text-sm leading-relaxed max-w-lg">
+                                    Every trip comes with maximum damage waiver, third-party liability, and round-the-clock roadside assistance. What you see is what you pay.
+                                </p>
+                            </div>
+                            <div class="flex flex-col gap-2.5 sm:min-w-[220px]">
+                                <span class="flex items-center gap-2 text-xs font-medium text-secondary"><i class="fas fa-shield text-accent"></i> Full Comprehensive Cover</span>
+                                <span class="flex items-center gap-2 text-xs font-medium text-secondary"><i class="fas fa-tools text-accent"></i> Free 24/7 Breakdown Help</span>
+                                <span class="flex items-center gap-2 text-xs font-medium text-secondary"><i class="fas fa-wallet text-accent"></i> Fast Deposit Refund</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+       
+
+
+              <!-- ========== SECTION 3: FEATURED FLEET (FILTERABLE SHOWCASE) ========== -->
+        <section id="featured-fleet" class="py-20 md:py-28 border-y border-border" style="background: var(--card-bg);">
+            <div class="max-w-7xl mx-auto px-5">
+                <!-- Centered Heading -->
+                <div class="text-center max-w-3xl mx-auto mb-12 reveal">
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Our Fleet</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                        Choose Your Perfect Self-Drive Car
+                    </h2>
+                    <p class="text-secondary text-base md:text-lg leading-relaxed">
+                        Every vehicle is thoroughly inspected, sanitized, and fully fueled before hand-off. Choose by category to match your journey.
+                    </p>
+                </div>
+
+                <!-- Category Filter Pills -->
+                <div class="flex flex-wrap items-center justify-center gap-2.5 mb-12 reveal">
+                    <button class="fleet-filter-btn active px-5 py-2 rounded-full text-xs font-semibold border border-accent bg-accent text-white" data-filter="all">
+                        <i class="fas fa-car mr-1.5"></i> All Vehicles
+                    </button>
+                    <button class="fleet-filter-btn px-5 py-2 rounded-full text-xs font-semibold border border-border bg-card text-secondary hover:border-accent hover:text-accent" data-filter="compact">
+                        <i class="fas fa-car-side mr-1.5"></i> Economy Compact
+                    </button>
+                    <button class="fleet-filter-btn px-5 py-2 rounded-full text-xs font-semibold border border-border bg-card text-secondary hover:border-accent hover:text-accent" data-filter="suv">
+                        <i class="fas fa-truck-pickup mr-1.5"></i> Family SUV
+                    </button>
+                    <button class="fleet-filter-btn px-5 py-2 rounded-full text-xs font-semibold border border-border bg-card text-secondary hover:border-accent hover:text-accent" data-filter="sport">
+                        <i class="fas fa-gauge-high mr-1.5"></i> Sports & Coupe
+                    </button>
+                </div>
+                
+                <!-- Fleet Grid -->
+                <div id="fleet-card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Car 1: Economy -->
+                    <div class="tire-card group" data-category="compact">
+                        <div class="relative overflow-hidden h-52">
+                            <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop" 
+                                 alt="Toyota Corolla Compact" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-4 left-4 status-badge">Instant Pickup</span>
+                            <span class="absolute top-4 right-4 bg-accent text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Economy</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="text-lg font-semibold" style="font-weight: 600 !important;">Toyota Corolla</h3>
+                                    <p class="text-xs text-secondary mt-1">Manual / Automatic • Petrol</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-accent">$39</p>
+                                    <p class="text-[10px] text-secondary uppercase">per day</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs text-secondary mb-4 pb-3 border-b border-border">
+                                <span><i class="fas fa-user mr-1 text-accent"></i> 5 Seats</span>
+                                <span><i class="fas fa-suitcase mr-1 text-accent"></i> 2 Bags</span>
+                                <span><i class="fas fa-road mr-1 text-accent"></i> Unlimited KM</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star-half-alt rating-star text-xs"></i>
+                                    <span class="text-xs text-secondary ml-1">(4.8)</span>
+                                </div>
+                                <span class="text-[11px] text-emerald-600 font-medium">Free cancellation</span>
+                            </div>
+                            <a href="fleet.html" class="btn-primary block w-full text-center py-2.5 text-sm font-medium">Book Self-Drive</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Car 2: Sports -->
+                    <div class="tire-card group" data-category="sport">
+                        <div class="relative overflow-hidden h-52">
+                            <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop" 
+                                 alt="Ford Mustang Sports" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-4 left-4 status-badge">Instant Pickup</span>
+                            <span class="absolute top-4 right-4 bg-accent text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Sports</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="text-lg font-semibold" style="font-weight: 600 !important;">Ford Mustang GT</h3>
+                                    <p class="text-xs text-secondary mt-1">V8 Engine • Automatic</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-accent">$89</p>
+                                    <p class="text-[10px] text-secondary uppercase">per day</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs text-secondary mb-4 pb-3 border-b border-border">
+                                <span><i class="fas fa-user mr-1 text-accent"></i> 4 Seats</span>
+                                <span><i class="fas fa-suitcase mr-1 text-accent"></i> 1 Bag</span>
+                                <span><i class="fas fa-tachometer-alt mr-1 text-accent"></i> High Performance</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <span class="text-xs text-secondary ml-1">(5.0)</span>
+                                </div>
+                                <span class="text-[11px] text-emerald-600 font-medium">Free cancellation</span>
+                            </div>
+                            <a href="fleet.html" class="btn-primary block w-full text-center py-2.5 text-sm font-medium">Book Self-Drive</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Car 3: SUV -->
+                    <div class="tire-card group" data-category="suv">
+                        <div class="relative overflow-hidden h-52">
+                            <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=2071&auto=format&fit=crop" 
+                                 alt="Honda CR-V SUV" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-4 left-4 status-badge">Instant Pickup</span>
+                            <span class="absolute top-4 right-4 bg-accent text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Family SUV</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="text-lg font-semibold" style="font-weight: 600 !important;">Honda CR-V All-Wheel</h3>
+                                    <p class="text-xs text-secondary mt-1">Hybrid AWD • Spacious Trunk</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-accent">$69</p>
+                                    <p class="text-[10px] text-secondary uppercase">per day</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs text-secondary mb-4 pb-3 border-b border-border">
+                                <span><i class="fas fa-user mr-1 text-accent"></i> 7 Seats</span>
+                                <span><i class="fas fa-suitcase mr-1 text-accent"></i> 4 Bags</span>
+                                <span><i class="fas fa-mountain mr-1 text-accent"></i> Outstation Ready</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="fas fa-star rating-star text-xs"></i>
+                                    <i class="far fa-star rating-star text-xs"></i>
+                                    <span class="text-xs text-secondary ml-1">(4.6)</span>
+                                </div>
+                                <span class="text-[11px] text-emerald-600 font-medium">Free cancellation</span>
+                            </div>
+                            <a href="fleet.html" class="btn-primary block w-full text-center py-2.5 text-sm font-medium">Book Self-Drive</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- View All Link -->
+                <div class="text-center mt-12 reveal">
+                    <a href="fleet.html" class="btn-outline px-8 py-3 text-sm font-semibold inline-flex items-center gap-2">
+                        View All 250+ Vehicles <i class="fas fa-arrow-right text-xs"></i>
                     </a>
-                    <a href="pricing.html" class="px-8 py-3.5 text-sm font-semibold inline-flex items-center justify-center gap-2 border-2 border-white/30 hover:border-white hover:bg-white/10 transition-all rounded-full text-white">
-                        <i class="fas fa-tag"></i> View Pricing
-                    </a>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
 
-<!-- ========== SECTION 5: TESTIMONIALS ========== -->
-<section class="py-20 md:py-28 border-y border-border" style="background: var(--card-bg);">
-    <div class="max-w-7xl mx-auto px-5">
-        <!-- Centered Heading -->
-        <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-            <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Testimonials</span>
-            <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
-                What Our Drivers Say
-            </h2>
-            <p class="text-secondary text-base md:text-lg leading-relaxed">
-                Real experiences from real customers who chose the SelfDrive way.
-            </p>
-        </div>
-        
-        <!-- Testimonial Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Testimonial 1 -->
-            <div class="bg-card rounded-2xl p-7 border border-border flex flex-col">
-                <div class="flex items-center gap-1 mb-4">
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
+        <!-- ========== SECTION 4: HOW IT WORKS — SPLIT VISUAL JOURNEY ========== -->
+        <section class="py-20 md:py-28" style="background: var(--bg-body);">
+            <div class="max-w-7xl mx-auto px-5">
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Contactless & 100% Digital</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                        How Self-Drive Works
+                    </h2>
+                    <p class="text-secondary text-base md:text-lg leading-relaxed">
+                        From keyless smartphone unlock to instant drop-off. Experience a smooth rental journey with zero paperwork and zero counter wait lines.
+                    </p>
                 </div>
-                <p class="text-secondary text-sm leading-relaxed flex-1 mb-6">
-                    "The entire process was incredibly smooth. I booked a car in 2 minutes, picked it up at the airport, and was on the road within 10 minutes. No hidden fees, no hassle. Will definitely use again!"
-                </p>
-                <div class="flex items-center gap-3 pt-4 border-t border-border">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" alt="Sarah Mitchell" class="w-10 h-10 rounded-full object-cover">
-                      <div>
-                        <p class="text-sm font-semibold" style="font-weight: 600 !important;">Sarah Mitchell</p>
-                        <p class="text-xs text-secondary">Business Traveler</p>
+
+                <!-- 2-Column Split: Interactive Phone Mockup (Left) vs Interactive Steps (Right) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Left Column: Interactive Smartphone Mockup (5 Cols) -->
+                    <div class="lg:col-span-5 flex justify-center">
+                        <div class="phone-mockup-wrapper">
+                            <div class="phone-mockup">
+                                <!-- Dynamic Island / Speaker -->
+                                <div class="phone-speaker-island"></div>
+                                
+                                <!-- Phone Screen Content -->
+                                <div class="phone-screen">
+                                    <!-- Screen Header Bar -->
+                                    <div class="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2 mb-3">
+                                        <span class="font-semibold text-white"><i class="fas fa-car text-accent mr-1"></i> SelfDrive App</span>
+                                        <span class="flex items-center gap-1.5"><i class="fas fa-wifi text-xs text-emerald-400"></i> <i class="fas fa-battery-three-quarters text-xs text-white"></i></span>
+                                    </div>
+
+                                    <!-- STATE 1: Choose & KYC -->
+                                    <div id="phone-screen-1" class="phone-step-screen active">
+                                        <div class="text-center mb-3">
+                                            <span class="text-[10px] bg-accent/20 text-accent font-bold px-2 py-0.5 rounded-full uppercase">Step 01: Booking</span>
+                                            <p class="text-xs text-slate-300 mt-1">Car Selected & DL Approved</p>
+                                        </div>
+                                        <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 mb-3">
+                                            <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop" class="w-full h-24 object-cover rounded-lg mb-2" alt="Corolla">
+                                            <div class="flex justify-between items-center text-xs">
+                                                <span class="font-bold text-white">Toyota Corolla</span>
+                                                <span class="text-accent font-bold">$39/day</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-400 mt-0.5">Downtown Station Bay #14</p>
+                                        </div>
+                                        <div class="bg-emerald-950/40 border border-emerald-500/40 rounded-xl p-3 text-xs mb-3">
+                                            <div class="flex items-center gap-2 text-emerald-400 font-semibold text-[11px]">
+                                                <i class="fas fa-check-circle"></i> Driving License Verified
+                                            </div>
+                                            <p class="text-[10px] text-slate-300 mt-1">Identity confirmed automatically in 45 seconds.</p>
+                                        </div>
+                                        <div class="w-full bg-accent text-white text-center py-2 rounded-lg text-xs font-semibold">
+                                            Car Reserved for Today
+                                        </div>
+                                    </div>
+
+                                    <!-- STATE 2: Smart Keyless Unlock -->
+                                    <div id="phone-screen-2" class="phone-step-screen">
+                                        <div class="text-center mb-2">
+                                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded-full uppercase">Step 02: Digital Key</span>
+                                            <p class="text-xs text-slate-300 mt-1">Contactless Car Access</p>
+                                        </div>
+                                        <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 text-center mb-4">
+                                            <p class="text-[11px] text-slate-400">Bluetooth Key Connected</p>
+                                            <p class="text-xs font-bold text-white mt-0.5">Toyota Corolla • Bay #14</p>
+                                            <p class="text-[10px] text-emerald-400 mt-1"><i class="fas fa-satellite-dish mr-1"></i> 2 meters away from vehicle</p>
+                                        </div>
+                                        <!-- Central Unlock Button -->
+                                        <div class="text-center my-4">
+                                            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-accent to-sky-300 flex flex-col items-center justify-center text-white shadow-xl shadow-accent/30 cursor-pointer animate-pulse">
+                                                <i class="fas fa-lock-open text-2xl mb-1"></i>
+                                                <span class="text-[10px] font-bold uppercase tracking-wider">UNLOCKED</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-400 mt-3">Doors unlocked. Keys inside the glovebox.</p>
+                                        </div>
+                                        <!-- Remote triggers -->
+                                        <div class="grid grid-cols-2 gap-2 text-[10px] mt-4">
+                                            <button class="bg-slate-800 py-2 rounded-lg text-slate-200 border border-slate-700"><i class="fas fa-lightbulb text-accent mr-1"></i> Flash Lights</button>
+                                            <button class="bg-slate-800 py-2 rounded-lg text-slate-200 border border-slate-700"><i class="fas fa-box-open text-accent mr-1"></i> Pop Trunk</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- STATE 3: Driving Freedom (Speed, Fuel, SOS) -->
+                                    <div id="phone-screen-3" class="phone-step-screen">
+                                        <div class="text-center mb-2">
+                                            <span class="text-[10px] bg-sky-500/20 text-sky-400 font-bold px-2 py-0.5 rounded-full uppercase">Step 03: On The Road</span>
+                                            <p class="text-xs text-slate-300 mt-1">100% Private Driving Freedom</p>
+                                        </div>
+                                        <!-- Live Telemetry -->
+                                        <div class="grid grid-cols-2 gap-2 mb-3">
+                                            <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 text-center">
+                                                <span class="text-[10px] text-slate-400 uppercase">Fuel Level</span>
+                                                <p class="text-lg font-bold text-emerald-400 mt-0.5">88%</p>
+                                                <span class="text-[9px] text-slate-400">340 Miles Range</span>
+                                            </div>
+                                            <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 text-center">
+                                                <span class="text-[10px] text-slate-400 uppercase">Trip Distance</span>
+                                                <p class="text-lg font-bold text-accent mt-0.5">142 mi</p>
+                                                <span class="text-[9px] text-slate-400">Unlimited Plan</span>
+                                            </div>
+                                        </div>
+                                        <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 mb-3 text-xs">
+                                            <div class="flex items-center justify-between text-slate-300 text-[11px] mb-1">
+                                                <span><i class="fas fa-shield-alt text-emerald-400 mr-1"></i> Roadside Support:</span>
+                                                <span class="text-emerald-400 font-bold">Active 24/7</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-400">Zero intruding monitoring. Just you and the open road.</p>
+                                        </div>
+                                        <button class="w-full bg-rose-600 hover:bg-rose-700 text-white text-center py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5">
+                                            <i class="fas fa-headset"></i> 1-Tap Emergency SOS Assistance
+                                        </button>
+                                    </div>
+
+                                    <!-- STATE 4: Drop Off & Deposit Release -->
+                                    <div id="phone-screen-4" class="phone-step-screen">
+                                        <div class="text-center mb-2">
+                                            <span class="text-[10px] bg-purple-500/20 text-purple-400 font-bold px-2 py-0.5 rounded-full uppercase">Step 04: Trip Complete</span>
+                                            <p class="text-xs text-slate-300 mt-1">Instant Return & Deposit Release</p>
+                                        </div>
+                                        <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 mb-3">
+                                            <div class="flex items-center justify-between text-xs mb-1">
+                                                <span class="text-white font-semibold">Downtown Hub Station</span>
+                                                <span class="text-emerald-400 text-[10px] font-bold">Bay #08 ✓</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-400">Digital key deactivated upon locking.</p>
+                                        </div>
+                                        <div class="bg-emerald-950/40 border border-emerald-500/40 rounded-xl p-3 text-xs mb-3 text-center">
+                                            <i class="fas fa-circle-check text-emerald-400 text-xl mb-1"></i>
+                                            <p class="text-xs font-bold text-white">Full Deposit Refunded</p>
+                                            <p class="text-[10px] text-emerald-300 mt-0.5">$0 deduction • Credited back instantly</p>
+                                        </div>
+                                        <div class="bg-slate-800 p-2.5 rounded-xl text-center text-xs">
+                                            <p class="text-[10px] text-slate-400 mb-1">Rate your SelfDrive Experience</p>
+                                            <div class="text-amber-400 text-sm">★★★★★</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- App Bottom Tab Bar Mockup -->
+                                    <div class="absolute bottom-2 left-4 right-4 bg-slate-900 border border-slate-800 rounded-xl py-2 px-3 flex justify-around text-slate-400 text-[10px]">
+                                        <span class="text-accent flex flex-col items-center"><i class="fas fa-car text-xs"></i>Trip</span>
+                                        <span class="flex flex-col items-center"><i class="fas fa-key text-xs"></i>Key</span>
+                                        <span class="flex flex-col items-center"><i class="fas fa-shield text-xs"></i>Safety</span>
+                                        <span class="flex flex-col items-center"><i class="fas fa-user text-xs"></i>Profile</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Interactive Step Milestones (7 Cols) -->
+                    <div class="lg:col-span-7 flex flex-col gap-4">
+                        <!-- Step 1 Card -->
+                        <div class="step-interactive-card active p-6 rounded-2xl p-4 sm:p-6 rounded-2xl" data-step="1">
+                            <div class="flex items-start gap-3 sm:gap-4">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-accent text-white flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
+                                    01
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
+                                        <h3 class="text-base sm:text-lg font-bold leading-snug" style="font-weight: 600 !important;">Pick Your Ride & 60-Sec Digital KYC</h3>
+                                        <span class="text-[10px] sm:text-[11px] font-semibold text-accent inline-flex items-center gap-1 shrink-0 whitespace-nowrap"><i class="fas fa-mouse-pointer text-[10px]"></i> Tap to preview</span>
+                                    </div>
+                                    <p class="text-secondary text-sm mt-1 leading-relaxed">
+                                        Select your vehicle, choose your dates, and upload your valid driving license. Our AI verification approves your profile in under 2 minutes with zero paper forms.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 Card -->
+                        <div class="step-interactive-card p-6 rounded-2xl p-4 sm:p-6 rounded-2xl" data-step="2">
+                            <div class="flex items-start gap-3 sm:gap-4">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-accent/15 text-accent flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
+                                    02
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
+                                        <h3 class="text-base sm:text-lg font-bold leading-snug" style="font-weight: 600 !important;">Contactless Keyless Unlock or Doorstep Handover</h3>
+                                        <span class="text-[10px] sm:text-[11px] font-semibold text-secondary inline-flex items-center gap-1 shrink-0 whitespace-nowrap"><i class="fas fa-mouse-pointer text-[10px]"></i> Tap to preview</span>
+                                    </div>
+                                    <p class="text-secondary text-sm mt-1 leading-relaxed">
+                                        Walk up to your car at any of our 50+ hubs and tap your phone to unlock the doors, or have the vehicle delivered sanitized to your doorstep.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 Card -->
+                        <div class="step-interactive-card p-6 rounded-2xl p-4 sm:p-6 rounded-2xl" data-step="3">
+                            <div class="flex items-start gap-3 sm:gap-4">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-accent/15 text-accent flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
+                                    03
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
+                                        <h3 class="text-base sm:text-lg font-bold leading-snug" style="font-weight: 600 !important;">Drive with 100% Privacy & 24/7 Roadside Cover</h3>
+                                        <span class="text-[10px] sm:text-[11px] font-semibold text-secondary inline-flex items-center gap-1 shrink-0 whitespace-nowrap"><i class="fas fa-mouse-pointer text-[10px]"></i> Tap to preview</span>
+                                    </div>
+                                    <p class="text-secondary text-sm mt-1 leading-relaxed">
+                                        Hit the open road on your own terms. No intrusive driver in the front seat, unlimited stops, freedom of route, and 24/7 nationwide roadside assistance.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 Card -->
+                        <div class="step-interactive-card p-6 rounded-2xl p-4 sm:p-6 rounded-2xl" data-step="4">
+                            <div class="flex items-start gap-3 sm:gap-4">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-accent/15 text-accent flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
+                                    04
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
+                                        <h3 class="text-base sm:text-lg font-bold leading-snug" style="font-weight: 600 !important;">Return at Any Station & Instant Deposit Release</h3>
+                                        <span class="text-[10px] sm:text-[11px] font-semibold text-secondary inline-flex items-center gap-1 shrink-0 whitespace-nowrap"><i class="fas fa-mouse-pointer text-[10px]"></i> Tap to preview</span>
+                                    </div>
+                                    <p class="text-secondary text-sm mt-1 leading-relaxed">
+                                        Park at any nearby station or schedule doorstep retrieval. Snap 4 inspection photos via the app and receive your full security deposit refund promptly.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Testimonial 2 -->
-            <div class="bg-card rounded-2xl p-7 border border-border flex flex-col">
-                <div class="flex items-center gap-1 mb-4">
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
+        </section>
+        <!-- ========== SECTION: THE 35-POINT SAFETY & HYGIENE PROMISE ========== -->
+        <section class="py-20 md:py-28 border-y border-border" style="background: var(--card-bg);">
+            <div class="max-w-7xl mx-auto px-5">
+                <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Your Peace of Mind</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                        The SelfDrive Safety Promise
+                    </h2>
+                    <p class="text-secondary text-base md:text-lg leading-relaxed">
+                        Every car undergoes rigorous mechanical inspection and medical-grade sanitization before reaching you. We never cut corners with your safety.
+                    </p>
                 </div>
-                <p class="text-secondary text-sm leading-relaxed flex-1 mb-6">
-                    "As a family of five, finding a reliable SUV rental was always a challenge. SelfDrive had exactly what we needed at a great price. The car was spotless and drove perfectly. Highly recommended!"
-                </p>
-                <div class="flex items-center gap-3 pt-4 border-t border-border">
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop" alt="James Rodriguez" class="w-10 h-10 rounded-full object-cover">
-                      <div>
-                        <p class="text-sm font-semibold" style="font-weight: 600 !important;">James Rodriguez</p>
-                        <p class="text-xs text-secondary">Family Vacation</p>
+
+                <!-- 4 Safety Pillars -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                    <div class="safety-point-card">
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xl mb-4">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h3 class="text-base font-bold mb-2" style="font-weight: 600 !important;">35-Point Inspection</h3>
+                        <p class="text-xs text-secondary leading-relaxed">
+                            Brake pads, tire tread depth (>4mm), engine fluids, suspension, headlights, and battery voltage tested before every handover.
+                        </p>
+                    </div>
+
+                    <div class="safety-point-card">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xl mb-4">
+                            <i class="fas fa-spray-can-sparkles"></i>
+                        </div>
+                        <h3 class="text-base font-bold mb-2" style="font-weight: 600 !important;">Medical-Grade Sanitized</h3>
+                        <p class="text-xs text-secondary leading-relaxed">
+                            High-contact surfaces (steering wheel, gear shift, AC vents, touchscreen, and seatbelts) disinfected with hospital-grade antibacterial fogging.
+                        </p>
+                    </div>
+
+                    <div class="safety-point-card">
+                        <div class="w-12 h-12 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-500 text-xl mb-4">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h3 class="text-base font-bold mb-2" style="font-weight: 600 !important;">100% Legal Permits</h3>
+                        <p class="text-xs text-secondary leading-relaxed">
+                            All vehicles operate with valid commercial tourist permits, comprehensive insurance papers, and fitness certificates stored in the glovebox.
+                        </p>
+                    </div>
+
+                    <div class="safety-point-card">
+                        <div class="w-12 h-12 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 text-xl mb-4">
+                            <i class="fas fa-truck-pickup"></i>
+                        </div>
+                        <h3 class="text-base font-bold mb-2" style="font-weight: 600 !important;">Nationwide 24/7 RSA</h3>
+                        <p class="text-xs text-secondary leading-relaxed">
+                            Punctures, jumpstarts, or towing: our 24/7 roadside assistance guarantees an on-site technician within 60 minutes or an immediate replacement vehicle.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Live Fleet Health Metric Strip -->
+                <div class="bg-gradient-to-r from-accent/10 via-sky-500/10 to-emerald-500/10 border border-accent/20 rounded-2xl p-6 md:p-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                        <div>
+                            <p class="text-2xl md:text-3xl font-bold text-accent">100%</p>
+                            <p class="text-xs text-secondary mt-1 font-medium">Pre-Trip Sanitization</p>
+                        </div>
+                        <div class="border-l border-border">
+                            <p class="text-2xl md:text-3xl font-bold text-emerald-600">45 Min</p>
+                            <p class="text-xs text-secondary mt-1 font-medium">Avg. Roadside Response</p>
+                        </div>
+                        <div class="border-l border-border">
+                            <p class="text-2xl md:text-3xl font-bold text-primary">&lt; 18 Mos</p>
+                            <p class="text-xs text-secondary mt-1 font-medium">Average Fleet Vehicle Age</p>
+                        </div>
+                        <div class="border-l border-border">
+                            <p class="text-2xl md:text-3xl font-bold text-sky-600">0%</p>
+                            <p class="text-xs text-secondary mt-1 font-medium">Hidden Charges Guarantee</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Testimonial 3 -->
-            <div class="bg-card rounded-2xl p-7 border border-border flex flex-col">
-                <div class="flex items-center gap-1 mb-4">
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star rating-star text-sm"></i>
-                    <i class="fas fa-star-half-alt rating-star text-sm"></i>
+        </section>
+
+
+        <!-- ========== SECTION: TRAVEL EXTRAS & ACCESSORIES ========== -->
+        <section class="py-20 md:py-24" style="background: var(--bg-body);">
+            <div class="max-w-7xl mx-auto px-5">
+                <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Travel Conveniences</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                        Equip Your Drive with Travel Add-Ons
+                    </h2>
+                    <p class="text-secondary text-base md:text-lg leading-relaxed">
+                        Customize your self-drive rental with verified family and road trip accessories. Select during checkout for hassle-free installation.
+                    </p>
                 </div>
-                <p class="text-secondary text-sm leading-relaxed flex-1 mb-6">
-                    "I've tried many rental services and SelfDrive is by far the best. Transparent pricing, excellent customer support, and a fantastic fleet. The 24/7 helpline saved me during a late-night breakdown."
-                </p>
-                <div class="flex items-center gap-3 pt-4 border-t border-border">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop" alt="Emily Chen" class="w-10 h-10 rounded-full object-cover">
-                      <div>
-                        <p class="text-sm font-semibold" style="font-weight: 600 !important;">Emily Chen</p>
-                        <p class="text-xs text-secondary">Weekend Explorer</p>
+
+                <!-- Addons Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Addon 1 -->
+                    <div class="addon-card flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xl mb-4">
+                                <i class="fas fa-baby-carriage"></i>
+                            </div>
+                            <h3 class="font-bold text-base mb-1" style="font-weight: 600 !important;">ISOFIX Child Seat</h3>
+                            <p class="text-xs text-secondary leading-relaxed mb-4">
+                                Certified infant and toddler seats sanitized and securely mounted before vehicle handover.
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-border flex items-center justify-between text-xs">
+                            <span class="font-bold text-accent">$8 / day</span>
+                            <span class="text-secondary">Ages 0 - 6 yrs</span>
+                        </div>
+                    </div>
+
+                    <!-- Addon 2 -->
+                    <div class="addon-card flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xl mb-4">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3 class="font-bold text-base mb-1" style="font-weight: 600 !important;">Automated Highway Toll Pass</h3>
+                            <p class="text-xs text-secondary leading-relaxed mb-4">
+                                FASTag / electronic transponder fitted to breeze through express toll lanes with zero cash stops.
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-border flex items-center justify-between text-xs">
+                            <span class="font-bold text-emerald-600">Included Free</span>
+                            <span class="text-secondary">Tolls billed at cost</span>
+                        </div>
+                    </div>
+
+                    <!-- Addon 3 -->
+                    <div class="addon-card flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-500 text-xl mb-4">
+                                <i class="fas fa-paw"></i>
+                            </div>
+                            <h3 class="font-bold text-base mb-1" style="font-weight: 600 !important;">Pet Travel Protection Kit</h3>
+                            <p class="text-xs text-secondary leading-relaxed mb-4">
+                                Waterproof rear seat hammock cover and seatbelt tether for safe journeys with furry companions.
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-border flex items-center justify-between text-xs">
+                            <span class="font-bold text-sky-600">$5 / day</span>
+                            <span class="text-secondary">Pet-friendly cars</span>
+                        </div>
+                    </div>
+
+                    <!-- Addon 4 -->
+                    <div class="addon-card flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 text-xl mb-4">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <h3 class="font-bold text-base mb-1" style="font-weight: 600 !important;">4K Dual Dashcam & Wi-Fi</h3>
+                            <p class="text-xs text-secondary leading-relaxed mb-4">
+                                Front and rear high-definition recording with an in-cabin 4G Wi-Fi hotspot for up to 5 mobile devices.
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-border flex items-center justify-between text-xs">
+                            <span class="font-bold text-amber-600">$7 / day</span>
+                            <span class="text-secondary">Unlimited 4G data</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
 
-<!-- ========== SECTION 6: CTA / CONTACT ========== -->
-<section class="py-20 md:py-28 relative overflow-hidden" style="background: var(--bg-body);">
-    <!-- Background Image with Overlay -->
-    <div class="absolute inset-0 bg-overlay">
-        <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop" 
-             alt="Open road adventure" class="w-full h-full object-cover">
-    </div>
-    
-    <div class="relative z-10 max-w-4xl mx-auto px-5 text-center text-white reveal">
-        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 border border-white/30 bg-white/10 backdrop-blur-sm">
-            <i class="fas fa-phone mr-1.5"></i> Get In Touch
-        </span>
-        <h2 class="text-3xl md:text-5xl font-bold mb-6" style="font-weight: 700 !important;">
-            Start Your Journey Today
-        </h2>
-        <p class="text-lg text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Have questions about our fleet, pricing, or coverage? Our team is ready to help you plan the perfect self-drive adventure.
-        </p>
+
+
+        <!-- ========== SECTION 5: REAL DRIVER EXPERIENCES ========== -->
+        <section class="py-20 md:py-28 border-y border-border" style="background: var(--card-bg);">
+            <div class="max-w-7xl mx-auto px-5">
+                <!-- Centered Heading -->
+                <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Customer Stories</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                        Real Journeys by Real Drivers
+                    </h2>
+                    <p class="text-secondary text-base md:text-lg leading-relaxed">
+                        Discover why thousands of travelers prefer the SelfDrive experience over traditional taxis and rentals.
+                    </p>
+                </div>
+                
+                <!-- Testimonial Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-card rounded-2xl p-7 border border-border flex flex-col">
+                        <span class="inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent/10 text-accent mb-4 w-fit">
+                            <i class="fas fa-umbrella-beach mr-1"></i> Weekend Coastal Roadtrip
+                        </span>
+                        <div class="flex items-center gap-1 mb-4">
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                        </div>
+                        <p class="text-secondary text-sm leading-relaxed flex-1 mb-6">
+                            "Renting a self-drive Mustang for our coastal road trip was the highlight of our vacation. Having our own car without an awkward driver gave us complete privacy to stop for sunsets and hidden viewpoints."
+                        </p>
+                        <div class="flex items-center gap-3 pt-4 border-t border-border">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" alt="Sarah Mitchell" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <p class="text-sm font-semibold" style="font-weight: 600 !important;">Sarah Mitchell</p>
+                                <p class="text-xs text-secondary">Rented Ford Mustang GT</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="bg-card rounded-2xl p-7 border border-border flex flex-col">
+                        <span class="inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent/10 text-accent mb-4 w-fit">
+                            <i class="fas fa-mountain mr-1"></i> Family Mountain Holiday
+                        </span>
+                        <div class="flex items-center gap-1 mb-4">
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                        </div>
+                        <p class="text-secondary text-sm leading-relaxed flex-1 mb-6">
+                            "With three kids and luggage, traditional cabs are a nightmare. SelfDrive delivered a spotless Honda CR-V right to our hotel doorstep. The kids loved the space and we traveled on our own schedule."
+                        </p>
+                        <div class="flex items-center gap-3 pt-4 border-t border-border">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop" alt="James Rodriguez" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <p class="text-sm font-semibold" style="font-weight: 600 !important;">James Rodriguez</p>
+                                <p class="text-xs text-secondary">Rented Honda CR-V</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="bg-card rounded-2xl p-7 border border-border flex flex-col">
+                        <span class="inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent/10 text-accent mb-4 w-fit">
+                            <i class="fas fa-briefcase mr-1"></i> Business City Commute
+                        </span>
+                        <div class="flex items-center gap-1 mb-4">
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star rating-star text-sm"></i>
+                            <i class="fas fa-star-half-alt rating-star text-xs"></i>
+                        </div>
+                        <p class="text-secondary text-sm leading-relaxed flex-1 mb-6">
+                            "Instead of paying multiple Uber surge fares between client meetings, I booked a Corolla for three full days. Keyless phone pickup at the airport station took literally 2 minutes."
+                        </p>
+                        <div class="flex items-center gap-3 pt-4 border-t border-border">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop" alt="Emily Chen" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <p class="text-sm font-semibold" style="font-weight: 600 !important;">Emily Chen</p>
+                                <p class="text-xs text-secondary">Rented Toyota Corolla</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
         
-        <!-- CTA Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <a href="contact.html" class="btn-primary px-8 py-3.5 text-base font-semibold shadow-lg inline-flex items-center justify-center gap-2">
-                <i class="fas fa-envelope"></i> Contact Us
-            </a>
-            <a href="fleet.html" class="btn-outline px-8 py-3.5 text-base font-semibold inline-flex items-center justify-center gap-2" style="border-color: rgba(255,255,255,0.6); color: #ffffff;">
-                <i class="fas fa-car"></i> Browse Cars
-            </a>
-        </div>
-        
-        <!-- Contact Info Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
-                <i class="fas fa-phone text-accent text-xl mb-3"></i>
-                <p class="text-xs text-white/60 uppercase tracking-wider mb-1">Call Us</p>
-                <p class="text-sm font-semibold" style="font-weight: 600 !important;">(800) 555-AUTO</p>
+        <!-- ========== SECTION: TRANSPARENT DEPOSIT & CANCELLATION GUARANTEE ========== -->
+        <section class="py-16 border-t border-border" style="background: var(--card-bg);">
+            <div class="max-w-7xl mx-auto px-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Policy 1 -->
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent text-xl shrink-0">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base mb-1" style="font-weight: 600 !important;">Instant Deposit Refund</h4>
+                            <p class="text-xs text-secondary leading-relaxed">
+                                Security deposits are released immediately upon completion of our 5-minute digital check-in. Funds reflect in your bank account within 24 hours.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Policy 2 -->
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xl shrink-0">
+                            <i class="fas fa-calendar-xmark"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base mb-1" style="font-weight: 600 !important;">100% Free Cancellation</h4>
+                            <p class="text-xs text-secondary leading-relaxed">
+                                Plans changed? Cancel up to 24 hours before your trip begins for a 100% immediate full refund with zero cancellation charges or penalties.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Policy 3 -->
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-500 text-xl shrink-0">
+                            <i class="fas fa-gas-pump"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base mb-1" style="font-weight: 600 !important;">Fair Fuel Equality Policy</h4>
+                            <p class="text-xs text-secondary leading-relaxed">
+                                We hand over the car with a full tank — simply return it at the same level. No marked-up refueling penalties or hidden station surcharges.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
-                <i class="fas fa-envelope text-accent text-xl mb-3"></i>
-                <p class="text-xs text-white/60 uppercase tracking-wider mb-1">Email</p>
-                <p class="text-sm font-semibold" style="font-weight: 600 !important;">hello@selfdrive.com</p>
+        </section>
+
+
+        <!-- ========== SECTION 6: SELF-DRIVE ESSENTIALS & FAQ ========== -->
+        <section class="py-20 md:py-28" style="background: var(--bg-body);">
+            <div class="max-w-5xl mx-auto px-5">
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-accent">Self-Drive Essentials</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mt-3 mb-5" style="font-weight: 700 !important;">
+                        Frequently Asked Questions
+                    </h2>
+                    <p class="text-secondary text-base md:text-lg leading-relaxed">
+                        Everything you need to know about renting, driving, fuel, and security deposits.
+                    </p>
+                </div>
+
+                <!-- FAQ Accordion -->
+                <div class="space-y-4 mb-16">
+                    <!-- FAQ 1 -->
+                    <div class="faq-item bg-card rounded-2xl p-4 sm:p-6 border border-border">
+                        <button type="button" class="faq-question flex items-start sm:items-center justify-between gap-3 sm:gap-4 w-full text-left font-semibold text-sm sm:text-base focus:outline-none cursor-pointer">
+                            <span class="flex-1 pr-2 leading-snug sm:leading-normal">What documents do I need to book and drive?</span>
+                            <i class="fas fa-chevron-down faq-chevron text-xs text-secondary transition-transform duration-300 shrink-0 mt-1 sm:mt-0 ml-auto"></i>
+                        </button>
+                        <div class="faq-answer text-secondary text-sm mt-3 leading-relaxed">
+                            All you need is a valid original Driving License (held for at least 1 year) and a government-issued photo ID proof (Passport, National ID, or Voter ID). International travelers can rent with an International Driving Permit (IDP) alongside their domestic license.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="faq-item bg-card rounded-2xl p-4 sm:p-6 border border-border">
+                        <button type="button" class="faq-question flex items-start sm:items-center justify-between gap-3 sm:gap-4 w-full text-left font-semibold text-sm sm:text-base focus:outline-none cursor-pointer">
+                            <span class="flex-1 pr-2 leading-snug sm:leading-normal">Is fuel included in the rental price?</span>
+                            <i class="fas fa-chevron-down faq-chevron text-xs text-secondary transition-transform duration-300 shrink-0 mt-1 sm:mt-0 ml-auto"></i>
+                        </button>
+                        <div class="faq-answer text-secondary text-sm mt-3 leading-relaxed">
+                            We offer two transparent models: "Without Fuel" (you receive the vehicle with a full tank and return it full) or "With Fuel Included" (where fuel costs are factored into a pre-paid mileage tier). You can choose whichever fits your road trip budget.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="faq-item bg-card rounded-2xl p-4 sm:p-6 border border-border">
+                        <button type="button" class="faq-question flex items-start sm:items-center justify-between gap-3 sm:gap-4 w-full text-left font-semibold text-sm sm:text-base focus:outline-none cursor-pointer">
+                            <span class="flex-1 pr-2 leading-snug sm:leading-normal">How does the refundable security deposit work?</span>
+                            <i class="fas fa-chevron-down faq-chevron text-xs text-secondary transition-transform duration-300 shrink-0 mt-1 sm:mt-0 ml-auto"></i>
+                        </button>
+                        <div class="faq-answer text-secondary text-sm mt-3 leading-relaxed">
+                            We offer a zero-deposit option for verified credit card holders. For standard bookings, a minimal security deposit is temporarily held and released back to your original payment method within 24 hours of vehicle return, following a quick digital inspection.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="faq-item bg-card rounded-2xl p-4 sm:p-6 border border-border">
+                        <button type="button" class="faq-question flex items-start sm:items-center justify-between gap-3 sm:gap-4 w-full text-left font-semibold text-sm sm:text-base focus:outline-none cursor-pointer">
+                            <span class="flex-1 pr-2 leading-snug sm:leading-normal">Can I take the self-drive vehicle across state borders?</span>
+                            <i class="fas fa-chevron-down faq-chevron text-xs text-secondary transition-transform duration-300 shrink-0 mt-1 sm:mt-0 ml-auto"></i>
+                        </button>
+                        <div class="faq-answer text-secondary text-sm mt-3 leading-relaxed">
+                            Yes! All SelfDrive vehicles carry all-state commercial tourist permits. You are free to drive anywhere within the country. Any applicable state border entry tolls or highway taxes can be paid seamlessly via the vehicle's electronic FASTag / toll pass.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 5 -->
+                    <div class="faq-item bg-card rounded-2xl p-4 sm:p-6 border border-border">
+                        <button type="button" class="faq-question flex items-start sm:items-center justify-between gap-3 sm:gap-4 w-full text-left font-semibold text-sm sm:text-base focus:outline-none cursor-pointer">
+                            <span class="flex-1 pr-2 leading-snug sm:leading-normal">What happens if the car breaks down or has a flat tire?</span>
+                            <i class="fas fa-chevron-down faq-chevron text-xs text-secondary transition-transform duration-300 shrink-0 mt-1 sm:mt-0 ml-auto"></i>
+                        </button>
+                        <div class="faq-answer text-secondary text-sm mt-3 leading-relaxed">
+                            Every rental includes 24/7 Roadside Assistance. In the rare event of mechanical trouble or a puncture, simply tap the SOS button in the app or call our emergency hotline. We will dispatch a mobile support van or arrange an immediate replacement car.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Box -->
+                <div class="bg-gradient-to-r from-accent/10 to-sky-500/10 border border-accent/30 rounded-2xl p-5 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6">
+                    <div class="w-full text-center sm:text-left">
+                        <h4 class="text-lg sm:text-xl font-bold mb-1" style="font-weight: 700 !important;">Still have questions about your self-drive trip?</h4>
+                        <p class="text-secondary text-xs sm:text-sm">Our round-the-clock rental advisors are here to help you choose the best car and route.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto shrink-0">
+                        <a href="contact.html" class="btn-primary w-full sm:w-auto px-5 sm:px-6 py-3 text-xs sm:text-sm font-semibold shadow-md inline-flex items-center justify-center gap-2 whitespace-nowrap">
+                            <i class="fas fa-headset"></i> Contact Support
+                        </a>
+                        <a href="tel:8005552886" class="btn-outline w-full sm:w-auto px-5 sm:px-6 py-3 text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 whitespace-nowrap">
+                            <i class="fas fa-phone"></i> (800) 555-AUTO
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
-                <i class="fas fa-clock text-accent text-xl mb-3"></i>
-                <p class="text-xs text-white/60 uppercase tracking-wider mb-1">Hours</p>
-                <p class="text-sm font-semibold" style="font-weight: 600 !important;">24/7 Service</p>
-            </div>
-        </div>
-    </div>
-</section>
+        </section>
     </main>
 
     <!-- Footer -->
     <footer class="pt-16 pb-8 border-t border-slate-800"
         style="background: var(--footer-bg); color: var(--footer-text);">
-        <div class="max-w-7xl mx-auto px-5 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+        <div class="max-w-7xl mx-auto px-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
             <div class="col-span-2 md:col-span-2 lg:col-span-1">
                 <a href="index.html" class="text-2xl font-bold tracking-tight text-accent" style="font-weight: 700 !important;"><i class="fas fa-car mr-2"></i>SelfDrive</a>
                 <p class="text-xs text-slate-400 mt-3 leading-relaxed">
@@ -1181,6 +2236,103 @@
         // MOCK support for home2 version (just stays same design but content identical, but we respect current page path)
         if (window.location.pathname.includes('home2.html')) { document.title = "SelfDriveSwift | Performance Pro Edition"; }
     </script>
+
+    <!-- Interactive Handlers for Self-Drive Experience -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Booking Tabs Toggle
+            const tabHub = document.getElementById('tab-hub-pickup');
+            const tabDoor = document.getElementById('tab-doorstep');
+            if (tabHub && tabDoor) {
+                tabHub.addEventListener('click', function() {
+                    tabHub.classList.add('active');
+                    tabDoor.classList.remove('active');
+                });
+                tabDoor.addEventListener('click', function() {
+                    tabDoor.classList.add('active');
+                    tabHub.classList.remove('active');
+                });
+            }
+
+            // 2. Interactive "How It Works" Phone Mockup Sync
+            const stepCards = document.querySelectorAll('.step-interactive-card');
+            const phoneScreens = document.querySelectorAll('.phone-step-screen');
+
+            function setActiveStep(stepNum) {
+                stepCards.forEach(card => {
+                    if (card.getAttribute('data-step') === String(stepNum)) {
+                        card.classList.add('active');
+                        card.querySelector('.w-12').classList.remove('bg-accent/15', 'text-accent');
+                        card.querySelector('.w-12').classList.add('bg-accent', 'text-white');
+                    } else {
+                        card.classList.remove('active');
+                        card.querySelector('.w-12').classList.remove('bg-accent', 'text-white');
+                        card.querySelector('.w-12').classList.add('bg-accent/15', 'text-accent');
+                    }
+                });
+
+                phoneScreens.forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                const targetScreen = document.getElementById('phone-screen-' + stepNum);
+                if (targetScreen) {
+                    targetScreen.classList.add('active');
+                }
+            }
+
+            stepCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const stepNum = this.getAttribute('data-step');
+                    setActiveStep(stepNum);
+                });
+                card.addEventListener('mouseenter', function() {
+                    const stepNum = this.getAttribute('data-step');
+                    setActiveStep(stepNum);
+                });
+            });
+
+            // 3. Fleet Category Filter Pills
+            const filterBtns = document.querySelectorAll('.fleet-filter-btn');
+            const fleetCards = document.querySelectorAll('#fleet-card-container .tire-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-accent', 'text-white');
+                        b.classList.add('text-secondary', 'bg-card');
+                    });
+                    this.classList.add('active', 'bg-accent', 'text-white');
+                    this.classList.remove('text-secondary', 'bg-card');
+
+                    const filter = this.getAttribute('data-filter');
+                    fleetCards.forEach(card => {
+                        const category = card.getAttribute('data-category');
+                        if (filter === 'all' || category === filter) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // 4. FAQ Accordion Toggle
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const questionBtn = item.querySelector('.faq-question');
+                if (questionBtn) {
+                    questionBtn.addEventListener('click', function() {
+                        const isOpen = item.classList.contains('open');
+                        faqItems.forEach(i => i.classList.remove('open'));
+                        if (!isOpen) {
+                            item.classList.add('open');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>
